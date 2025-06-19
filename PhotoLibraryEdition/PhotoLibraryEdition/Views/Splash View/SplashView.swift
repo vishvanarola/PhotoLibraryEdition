@@ -12,14 +12,14 @@ struct SplashView: View {
     
     var body: some View {
         if isActive {
-            ContentView()
+            TabBarView()
         } else {
             VStack(spacing: 15) {
                 Image(systemName: "bookmark.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.primary)
                 
-                Text("App Name")
+                Text(appName)
                     .font(FontConstants.Fonts.montserrat_Bold(size: 30))
                     .foregroundColor(.primary)
                 

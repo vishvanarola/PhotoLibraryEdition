@@ -10,5 +10,7 @@
         <string>Montserrat-SemiBold.ttf</string>
 		<string>Montserrat-Bold.ttf</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to your photo library to display your videos.</string>
 </dict>
 </plist>
