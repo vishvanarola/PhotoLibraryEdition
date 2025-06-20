@@ -8,7 +8,12 @@
         <string>Montserrat-Regular.ttf</string>
         <string>Montserrat-Medium.ttf</string>
         <string>Montserrat-SemiBold.ttf</string>
-		<string>Montserrat-Bold.ttf</string>
+        <string>Montserrat-Bold.ttf</string>
+        <string>Syne-Regular.ttf</string>
+        <string>Syne-Medium.ttf</string>
+        <string>Syne-SemiBold.ttf</string>
+        <string>Syne-Bold.ttf</string>
+		<string>Syne-ExtraBold.ttf</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to display your videos.</string>

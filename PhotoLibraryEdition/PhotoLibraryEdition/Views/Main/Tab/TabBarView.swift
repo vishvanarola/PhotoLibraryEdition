@@ -28,7 +28,7 @@ struct TabBarView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGray6).ignoresSafeArea())
+            .background(Color(.white).ignoresSafeArea())
             
             // Custom Tab Bar
             HStack {
@@ -39,11 +39,11 @@ struct TabBarView: View {
                 tabBarItem(tab: .lock, icon: "ic_lock", label: "Lock")
             }
             .padding(.horizontal)
-            .padding(.vertical, 20)
+            .padding(.vertical, 15)
             .background(
                 Color.white
-                    .cornerRadius(35, corners: [.topLeft, .topRight])
-                    .shadow(color: Color.black.opacity(0.25), radius: 8, x: 0, y: 4)
+                    .cornerRadius(30, corners: [.topLeft, .topRight])
+                    .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
             )
         }
         .ignoresSafeArea()
@@ -54,11 +54,12 @@ struct TabBarView: View {
         let isSelected = selectedTab == tab
         VStack(spacing: 5) {
             Image(icon)
-                .font(.system(size: 20))
+                .resizable()
+                .frame(width: 30, height: 30)
                 .foregroundColor(isSelected ? Color.red : Color(.systemGray3))
             Text(label)
-                .font(isSelected ? FontConstants.Fonts.montserrat_SemiBold(size: 16) : FontConstants.Fonts.montserrat_Medium(size: 16))
-                .foregroundColor(isSelected ? Color.red : Color(.systemGray3))
+                .font(FontConstants.MontserratFonts.medium(size: 16))
+                .foregroundColor(isSelected ? redThemeColor : textGrayColor)
         }
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
@@ -70,23 +71,4 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView()
-}
-
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect,
-                                byRoundingCorners: corners,
-                                cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
 }

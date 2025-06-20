@@ -10,12 +10,13 @@ import Photos
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    let toolsArray = ["Text\nRepeater", "Text\nto Emoji", "Text\nStyle Design", "Mute\nAudio", "Video\nConvertor"]
     
     var body: some View {
         VStack {
             headerView
             videoListView
-            Spacer()
+            moreToolsView
         }
         .ignoresSafeArea()
     }
@@ -30,13 +31,14 @@ struct HomeView: View {
                         
                     } label: {
                         Image("ic_setting")
-                            .font(.system(size: 20))
+                            .resizable()
+                            .frame(width: 30, height: 30)
                             .foregroundColor(.white)
                     }
                     Spacer()
                     Spacer()
                     Text(appName)
-                        .font(FontConstants.Fonts.montserrat_Bold(size: 25))
+                        .font(FontConstants.SyneFonts.semiBold(size: 23))
                         .foregroundStyle(Color.white)
                     Spacer()
                     Button {
@@ -57,8 +59,14 @@ struct HomeView: View {
             switch viewModel.authorizationStatus {
             case .authorized, .limited:
                 if viewModel.videos.isEmpty {
-                    Text("No videos found in your library.")
-                        .padding()
+                    VStack {
+                        Spacer()
+                        Text("No videos found in your library.")
+                            .font(FontConstants.MontserratFonts.regular(size: 15))
+                            .foregroundColor(.primary)
+                            .padding()
+                        Spacer()
+                    }
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 16) {
@@ -68,59 +76,119 @@ struct HomeView: View {
                             }
                         }
                         .padding(.top)
+                        .padding(.bottom, 5)
                     }
                 }
             case .denied, .restricted:
-                Text("Photo library access denied. Please enable it in Settings.")
-                    .foregroundColor(.red)
-                    .padding()
+                VStack {
+                    Spacer()
+                    Text("Photo library access denied. Please enable it in Settings.")
+                        .font(FontConstants.MontserratFonts.regular(size: 15))
+                        .foregroundColor(.red)
+                        .padding()
+                    Spacer()
+                }
             case .notDetermined:
                 ProgressView("Requesting access...")
                     .padding()
             @unknown default:
-                Text("Unknown authorization status.")
-                    .padding()
+                VStack {
+                    Spacer()
+                    Text("Unknown authorization status.")
+                        .font(FontConstants.MontserratFonts.regular(size: 15))
+                        .foregroundColor(.primary)
+                        .padding()
+                    Spacer()
+                }
             }
         }
+    }
+    
+    var moreToolsView: some View {
+        VStack(alignment: .leading) {
+            Text("More Tools")
+                .font(FontConstants.MontserratFonts.semiBold(size: 20))
+                .foregroundStyle(Color.primary)
+                .padding(.horizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    Spacer(minLength: 16)
+                    ForEach(toolsArray, id: \.self) { tool in
+                        moreToolsButton(toolName: tool)
+                    }
+                    Spacer(minLength: 16)
+                }
+                .padding(.top, 5)
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            Color.clear
+                .frame(height: 100)
+        }
+    }
+    
+    func moreToolsButton(toolName: String) -> some View {
+        HStack {
+            Text(toolName)
+                .font(FontConstants.MontserratFonts.medium(size: 15))
+            Image("ic_tools")
+        }
+        .padding(.top, 5)
+        .padding(.bottom)
+        .padding(.horizontal)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(LinearGradient(
+                    colors: [pinkThemeColor.opacity(0.3), .white],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(
+                    LinearGradient(
+                        colors: [redThemeColor, pinkThemeColor],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.3
+                )
+        )
     }
 }
 
 struct VideoThumbnailView: View {
     let asset: PHAsset
     @State private var thumbnail: UIImage? = nil
+    @State private var videoName: String = ""
+    @State private var videoSize: String = ""
     
     var body: some View {
         Group {
             if let thumbnail = thumbnail {
-                HStack {
+                HStack(spacing: 14) {
                     Image(uiImage: thumbnail)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 70, height: 70)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray, lineWidth: 1)
-                        )
+                        .frame(width: 60, height: 60)
+                        .cornerRadius(10)
                     
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Video Name")
-                            .font(FontConstants.Fonts.montserrat_SemiBold(size: 17))
+                        Text(videoName.isEmpty ? "Video Name" : videoName)
+                            .font(FontConstants.MontserratFonts.semiBold(size: 15))
+                            .lineLimit(2)
                             .foregroundStyle(Color.primary)
-                        Text("20.09 KB")
-                            .font(FontConstants.Fonts.montserrat_Regular(size: 15))
-                            .foregroundStyle(Color.primary)
+                        Text(videoSize.isEmpty ? "--" : videoSize)
+                            .font(FontConstants.MontserratFonts.medium(size: 14))
+                            .foregroundStyle(textGrayColor)
+                            .lineLimit(1)
                     }
-                    
-                    Spacer()
                 }
-                .padding()
+                .padding(10)
                 .background(Color.white)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
+                .cornerRadius(15)
+                .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 0)
             } else {
                 ZStack {
                     Color.gray.opacity(0.2)
@@ -130,6 +198,7 @@ struct VideoThumbnailView: View {
         }
         .onAppear {
             loadThumbnail()
+            loadVideoInfo()
         }
     }
     
@@ -145,6 +214,22 @@ struct VideoThumbnailView: View {
                 self.thumbnail = image
             }
         }
+    }
+    
+    private func loadVideoInfo() {
+        let resources = PHAssetResource.assetResources(for: asset)
+        if let resource = resources.first {
+            self.videoName = resource.originalFilename
+            if let fileSize = resource.value(forKey: "fileSize") as? Int {
+                self.videoSize = formatBytes(fileSize)
+            }
+        }
+    }
+    
+    private func formatBytes(_ bytes: Int) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: Int64(bytes))
     }
 }
 

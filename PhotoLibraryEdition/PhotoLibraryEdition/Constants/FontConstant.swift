@@ -11,33 +11,60 @@ struct FontConstants {
     
     // MARK: - Font Families
     struct Family {
-        static let light = "Montserrat-Light"
-        static let regular = "Montserrat-Regular"
-        static let medium = "Montserrat-Medium"
-        static let semibold = "Montserrat-SemiBold"
-        static let bold = "Montserrat-Bold"
+        static let montserratLight = "Montserrat-Light"
+        static let montserratRegular = "Montserrat-Regular"
+        static let montserratMedium = "Montserrat-Medium"
+        static let montserratSemiBold = "Montserrat-SemiBold"
+        static let montserratBold = "Montserrat-Bold"
+        static let syneRegular = "Syne-Regular"
+        static let syneMedium = "Syne-Medium"
+        static let syneSemiBold = "Syne-SemiBold"
+        static let syneBold = "Syne-Bold"
+        static let syneExtraBold = "Syne-ExtraBold"
     }
     
     // MARK: - Dynamic Font Provider
-    struct Fonts {
-        static func montserrat_Light(size: CGFloat) -> Font {
-            Font.custom(Family.light, size: size)
+    struct MontserratFonts {
+        static func light(size: CGFloat) -> Font {
+            Font.custom(Family.montserratLight, size: size)
         }
         
-        static func montserrat_Regular(size: CGFloat) -> Font {
-            Font.custom(Family.regular, size: size)
+        static func regular(size: CGFloat) -> Font {
+            Font.custom(Family.montserratRegular, size: size)
         }
         
-        static func montserrat_Medium(size: CGFloat) -> Font {
-            Font.custom(Family.medium, size: size)
+        static func medium(size: CGFloat) -> Font {
+            Font.custom(Family.montserratMedium, size: size)
         }
         
-        static func montserrat_SemiBold(size: CGFloat) -> Font {
-            Font.custom(Family.semibold, size: size)
+        static func semiBold(size: CGFloat) -> Font {
+            Font.custom(Family.montserratSemiBold, size: size)
         }
         
-        static func montserrat_Bold(size: CGFloat) -> Font {
-            Font.custom(Family.bold, size: size)
+        static func bold(size: CGFloat) -> Font {
+            Font.custom(Family.montserratBold, size: size)
+        }
+    }
+    
+    struct SyneFonts {
+        static func light(size: CGFloat) -> Font {
+            Font.custom(Family.syneRegular, size: size)
+        }
+        
+        static func regular(size: CGFloat) -> Font {
+            Font.custom(Family.syneMedium, size: size)
+        }
+        
+        static func medium(size: CGFloat) -> Font {
+            Font.custom(Family.syneSemiBold, size: size)
+        }
+        
+        static func semiBold(size: CGFloat) -> Font {
+            Font.custom(Family.syneBold, size: size)
+        }
+        
+        static func bold(size: CGFloat) -> Font {
+            Font.custom(Family.syneExtraBold, size: size)
         }
     }
 }

@@ -15,16 +15,17 @@ struct SplashView: View {
             TabBarView()
         } else {
             VStack(spacing: 15) {
-                Image(systemName: "bookmark.fill")
-                    .font(.system(size: 80))
+                Image("ic_myfiles")
+                    .resizable()
+                    .frame(width: 130, height: 130)
                     .foregroundColor(.primary)
                 
                 Text(appName)
-                    .font(FontConstants.Fonts.montserrat_Bold(size: 30))
+                    .font(FontConstants.SyneFonts.semiBold(size: 30))
                     .foregroundColor(.primary)
                 
-                Text("Slow it down, create your space, and keep your moments private")
-                    .font(FontConstants.Fonts.montserrat_Regular(size: 20))
+                Text("\"Slow it down, create your space, and keep your moments private.\"")
+                    .font(FontConstants.MontserratFonts.regular(size: 20))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
             }
