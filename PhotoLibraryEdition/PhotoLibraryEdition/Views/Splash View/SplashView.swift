@@ -31,7 +31,7 @@ struct SplashView: View {
             }
             .padding()
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now()) {
                     withAnimation {
                         self.isActive = true
                     }

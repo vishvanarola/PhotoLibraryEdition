@@ -8,17 +8,54 @@
 import SwiftUI
 import Photos
 
+enum HomeDestination: Hashable {
+    case muteAudio
+    case textEmoji
+    case textRepeater
+    case textStyleDesign
+    case videoConvertor
+}
+
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
-    let toolsArray = ["Text\nRepeater", "Text\nto Emoji", "Text\nStyle Design", "Mute\nAudio", "Video\nConvertor"]
+    let tools: [(name: String, destination: HomeDestination)] = [
+        ("Text\nRepeater", .textRepeater),
+        ("Text\nto Emoji", .textEmoji),
+        ("Text\nStyle Design", .textStyleDesign),
+        ("Mute\nAudio", .muteAudio),
+        ("Video\nConvertor", .videoConvertor)
+    ]
+    @State private var navigationPath = NavigationPath()
     
     var body: some View {
-        VStack {
-            headerView
-            videoListView
-            moreToolsView
+        NavigationStack(path: $navigationPath) {
+            VStack {
+                headerView
+                videoListView
+                moreToolsView
+            }
+            .ignoresSafeArea()
+            .navigationDestination(for: HomeDestination.self) { destination in
+                switch destination {
+                case .muteAudio:
+                    MuteAudioView()
+                        .navigationBarBackButtonHidden(true)
+                case .textEmoji:
+                    TextEmojiView()
+                        .navigationBarBackButtonHidden(true)
+                case .textRepeater:
+                    TextRepeaterView()
+                        .navigationBarBackButtonHidden(true)
+                case .textStyleDesign:
+                    TextStyleDesignView()
+                        .navigationBarBackButtonHidden(true)
+                case .videoConvertor:
+                    VideoConvertorView()
+                        .navigationBarBackButtonHidden(true)
+                }
+            }
         }
-        .ignoresSafeArea()
+        .navigationBarBackButtonHidden(true)
     }
     
     var headerView: some View {
@@ -113,8 +150,8 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     Spacer(minLength: 16)
-                    ForEach(toolsArray, id: \.self) { tool in
-                        moreToolsButton(toolName: tool)
+                    ForEach(tools, id: \.destination) { tool in
+                        moreToolsButton(toolName: tool.name, destination: tool.destination)
                     }
                     Spacer(minLength: 16)
                 }
@@ -127,10 +164,16 @@ struct HomeView: View {
         }
     }
     
-    func moreToolsButton(toolName: String) -> some View {
+    func moreToolsButton(toolName: String, destination: HomeDestination) -> some View {
         HStack {
-            Text(toolName)
-                .font(FontConstants.MontserratFonts.medium(size: 15))
+            Button {
+                navigationPath.append(destination)
+            } label: {
+                Text(toolName)
+                    .font(FontConstants.MontserratFonts.medium(size: 15))
+                    .foregroundStyle(Color.black)
+                    .multilineTextAlignment(.leading)
+            }
             Image("ic_tools")
         }
         .padding(.top, 5)
