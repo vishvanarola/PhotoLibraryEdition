@@ -34,7 +34,6 @@ struct PhotoLibraryEditionApp: App {
     var body: some Scene {
         WindowGroup {
             SplashView()
-//            TextEmojiView()
         }
         .modelContainer(sharedModelContainer)
     }

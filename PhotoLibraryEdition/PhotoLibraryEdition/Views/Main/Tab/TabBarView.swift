@@ -13,6 +13,7 @@ enum CustomTab {
 
 struct TabBarView: View {
     @State private var selectedTab: CustomTab = .home
+    @State private var isTabBarHidden: Bool = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -20,7 +21,7 @@ struct TabBarView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView()
+                    HomeView(isTabBarHidden: $isTabBarHidden)
                 case .myFiles:
                     MyFilesView()
                 case .lock:
@@ -31,20 +32,22 @@ struct TabBarView: View {
             .background(Color(.white).ignoresSafeArea())
             
             // Custom Tab Bar
-            HStack {
-                tabBarItem(tab: .home, icon: "ic_home", label: "Home")
-                Spacer()
-                tabBarItem(tab: .myFiles, icon: "ic_myfiles", label: "My Files")
-                Spacer()
-                tabBarItem(tab: .lock, icon: "ic_lock", label: "Lock")
+            if !isTabBarHidden {
+                HStack {
+                    tabBarItem(tab: .home, icon: "ic_home", label: "Home")
+                    Spacer()
+                    tabBarItem(tab: .myFiles, icon: "ic_myfiles", label: "My Files")
+                    Spacer()
+                    tabBarItem(tab: .lock, icon: "ic_lock", label: "Lock")
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 15)
+                .background(
+                    Color.white
+                        .cornerRadius(30, corners: [.topLeft, .topRight])
+                        .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
+                )
             }
-            .padding(.horizontal)
-            .padding(.vertical, 15)
-            .background(
-                Color.white
-                    .cornerRadius(30, corners: [.topLeft, .topRight])
-                    .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
-            )
         }
         .ignoresSafeArea()
     }

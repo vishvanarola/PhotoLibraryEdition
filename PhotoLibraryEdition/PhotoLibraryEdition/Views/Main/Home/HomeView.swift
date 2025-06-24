@@ -26,6 +26,7 @@ struct HomeView: View {
         ("Video\nConvertor", .videoConvertor)
     ]
     @State private var navigationPath = NavigationPath()
+    @Binding var isTabBarHidden: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -41,13 +42,13 @@ struct HomeView: View {
                     MuteAudioView()
                         .navigationBarBackButtonHidden(true)
                 case .textEmoji:
-                    TextEmojiView()
+                    TextEmojiView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 case .textRepeater:
-                    TextRepeaterView()
+                    TextRepeaterView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 case .textStyleDesign:
-                    TextStyleDesignView()
+                    TextStyleDesignView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 case .videoConvertor:
                     VideoConvertorView()
@@ -59,36 +60,15 @@ struct HomeView: View {
     }
     
     var headerView: some View {
-        ZStack {
-            GradientView()
-            VStack {
-                Spacer()
-                HStack {
-                    Button {
-                        
-                    } label: {
-                        Image("ic_setting")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                    Spacer()
-                    Text(appName)
-                        .font(FontConstants.SyneFonts.semiBold(size: 23))
-                        .foregroundStyle(Color.white)
-                    Spacer()
-                    Button {
-                        
-                    } label: {
-                        Image("ic_pro")
-                    }
-                }
-                .padding(.bottom, 20)
-                .padding(.horizontal, 20)
+        HeaderView(
+            leftButtonImageName: "ic_setting",
+            rightButtonImageName: "ic_pro",
+            headerTitle: appName,
+            leftButtonAction: {
+            },
+            rightButtonAction: {
             }
-        }
-        .frame(height: UIScreen.main.bounds.height*0.15)
+        )
     }
     
     var videoListView: some View {
@@ -167,6 +147,7 @@ struct HomeView: View {
     func moreToolsButton(toolName: String, destination: HomeDestination) -> some View {
         HStack {
             Button {
+                isTabBarHidden = true
                 navigationPath.append(destination)
             } label: {
                 Text(toolName)
@@ -277,5 +258,5 @@ struct VideoThumbnailView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(isTabBarHidden: .constant(true))
 }

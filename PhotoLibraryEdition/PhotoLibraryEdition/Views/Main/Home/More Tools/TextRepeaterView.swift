@@ -14,9 +14,10 @@ struct TextRepeaterView: View {
     @State private var isAddSpaceSelected: Bool = true
     @State private var isNewLineSelected: Bool = false
     @State private var outputText: String = ""
+    @Binding var isTabBarHidden: Bool
     
     var body: some View {
-        VStack() {
+        VStack {
             headerView
             ScrollView {
                 VStack(alignment: .leading, spacing: 25) {
@@ -39,6 +40,7 @@ struct TextRepeaterView: View {
             rightButtonImageName: nil,
             headerTitle: "Text Repeater",
             leftButtonAction: {
+                isTabBarHidden = false
                 presentationMode.wrappedValue.dismiss()
             },
             rightButtonAction: nil
@@ -134,8 +136,4 @@ struct TextRepeaterView: View {
         
         outputText = Array(repeating: enterTextInput, count: count).joined(separator: separator)
     }
-}
-
-#Preview {
-    TextRepeaterView()
 }

@@ -24,8 +24,6 @@ struct HeaderView: View {
                          leftButtonAction()
                      } label: {
                          Image(leftButtonImageName)
-                             .resizable()
-                             .frame(width: 30, height: 30)
                              .foregroundColor(.white)
                      }
                      Spacer()
@@ -41,8 +39,6 @@ struct HeaderView: View {
                              rightButtonAction?()
                          }) {
                              Image(rightImage)
-                                 .resizable()
-                                 .frame(width: 30, height: 30)
                                  .foregroundColor(.white)
                          }
                      } else {
