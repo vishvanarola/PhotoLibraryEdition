@@ -4,38 +4,40 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-        <string>Montserrat-Light.ttf</string>
-        <string>Montserrat-Regular.ttf</string>
-        <string>Montserrat-Medium.ttf</string>
-        <string>Montserrat-SemiBold.ttf</string>
-        <string>Montserrat-Bold.ttf</string>
-        <string>Syne-Regular.ttf</string>
-        <string>Syne-Medium.ttf</string>
-        <string>Syne-SemiBold.ttf</string>
-        <string>Syne-Bold.ttf</string>
+		<string>Montserrat-Light.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
+		<string>Montserrat-Medium.ttf</string>
+		<string>Montserrat-SemiBold.ttf</string>
+		<string>Montserrat-Bold.ttf</string>
+		<string>Syne-Regular.ttf</string>
+		<string>Syne-Medium.ttf</string>
+		<string>Syne-SemiBold.ttf</string>
+		<string>Syne-Bold.ttf</string>
 		<string>Syne-ExtraBold.ttf</string>
-        <string>Aloevera.ttf</string>
-        <string>AngelinaPersonal.ttf</string>
-        <string>BoogieBoysExtrude.otf</string>
-        <string>DarlingtonDemo.ttf</string>
-        <string>Dirtyboy.ttf</string>
-        <string>EnjelinaDemo.ttf</string>
-        <string>Inferno.ttf</string>
-        <string>KingstoneDemoRegular.ttf</string>
-        <string>KnightWarrior.otf</string>
-        <string>MonainnRegular.otf</string>
-        <string>MouldyCheeseRegular.ttf</string>
-        <string>RustyAttackDemo.otf</string>
-        <string>Scripto.ttf</string>
-        <string>SkiwarRegular.otf</string>
-        <string>SoulsideBetrayed.ttf</string>
-        <string>SuperFunky.ttf</string>
-        <string>SuperRugged.ttf</string>
-        <string>SuperScribble.ttf</string>
-        <string>TheHeartOfEverythingDemo.ttf</string>
-        <string>VeryVeryPunkFont.ttf</string>
+		<string>Aloevera.ttf</string>
+		<string>AngelinaPersonal.ttf</string>
+		<string>BoogieBoysExtrude.otf</string>
+		<string>DarlingtonDemo.ttf</string>
+		<string>Dirtyboy.ttf</string>
+		<string>EnjelinaDemo.ttf</string>
+		<string>Inferno.ttf</string>
+		<string>KingstoneDemoRegular.ttf</string>
+		<string>KnightWarrior.otf</string>
+		<string>MonainnRegular.otf</string>
+		<string>MouldyCheeseRegular.ttf</string>
+		<string>RustyAttackDemo.otf</string>
+		<string>Scripto.ttf</string>
+		<string>SkiwarRegular.otf</string>
+		<string>SoulsideBetrayed.ttf</string>
+		<string>SuperFunky.ttf</string>
+		<string>SuperRugged.ttf</string>
+		<string>SuperScribble.ttf</string>
+		<string>TheHeartOfEverythingDemo.ttf</string>
+		<string>VeryVeryPunkFont.ttf</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to display your videos.</string>
+	<key>UIUserInterfaceStyle</key>
+	<string>LIGHT</string>
 </dict>
 </plist>

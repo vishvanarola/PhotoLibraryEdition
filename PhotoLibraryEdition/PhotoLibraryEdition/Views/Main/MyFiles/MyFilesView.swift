@@ -14,29 +14,45 @@ struct MyFilesView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Collage.createdAt, order: .reverse) private var collages: [Collage]
-
+    @Binding var selectedTab: CustomTab
+    @State private var path = NavigationPath()
+    
+    enum MyFilesRoute: Hashable {
+        case photosCollage(Collage)
+    }
+    
     var body: some View {
-        ZStack {
-            VStack {
-                headerView
-                listView
+        NavigationStack(path: $path) {
+            ZStack {
+                VStack {
+                    headerView
+                    listView
+                }
+                .ignoresSafeArea()
+                .navigationBarBackButtonHidden(true)
+                
+                if showCreateCollage {
+                    CreateCollageView(isPresented: $showCreateCollage, collageToEdit: collageToEdit)
+                }
             }
-            .ignoresSafeArea()
-            .navigationBarBackButtonHidden(true)
-
-            if showCreateCollage {
-                CreateCollageView(isPresented: $showCreateCollage, collageToEdit: collageToEdit)
+            .navigationDestination(for: MyFilesRoute.self) { route in
+                switch route {
+                case .photosCollage(let collage):
+                    PhotosCollageView(collage: collage)
+                }
             }
         }
     }
-
+    
     var headerView: some View {
         HeaderView(
             leftButtonImageName: "ic_back",
             rightButtonImageName: "ic_plus",
             headerTitle: "My Files",
             leftButtonAction: {
-                dismiss()
+                withAnimation {
+                    selectedTab = .home
+                }
             },
             rightButtonAction: {
                 withAnimation {
@@ -46,7 +62,7 @@ struct MyFilesView: View {
             }
         )
     }
-
+    
     var listView: some View {
         Group {
             if collages.isEmpty {
@@ -84,7 +100,7 @@ struct MyFilesView: View {
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
-
+                            
                             Button {
                                 collageToEdit = collage
                                 showCreateCollage = true
@@ -93,13 +109,16 @@ struct MyFilesView: View {
                             }
                             .tint(.blue)
                         }
+                        .onTapGesture {
+                            path.append(MyFilesRoute.photosCollage(collage))
+                        }
                     }
                 }
                 .listStyle(PlainListStyle())
             }
         }
     }
-
+    
     var emptyStateView: some View {
         VStack {
             Spacer()
@@ -109,7 +128,7 @@ struct MyFilesView: View {
             Spacer()
         }
     }
-
+    
     private func deleteCollage(_ collage: Collage) {
         modelContext.delete(collage)
         do {
@@ -121,5 +140,5 @@ struct MyFilesView: View {
 }
 
 #Preview {
-    MyFilesView()
+    MyFilesView(selectedTab: .constant(.myFiles))
 }

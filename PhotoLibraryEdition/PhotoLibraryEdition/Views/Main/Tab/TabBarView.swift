@@ -23,9 +23,9 @@ struct TabBarView: View {
                 case .home:
                     HomeView(isTabBarHidden: $isTabBarHidden)
                 case .myFiles:
-                    MyFilesView()
+                    MyFilesView(selectedTab: $selectedTab)
                 case .lock:
-                    LockScreenView()
+                    LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

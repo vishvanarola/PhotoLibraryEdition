@@ -39,7 +39,7 @@ struct HomeView: View {
             .navigationDestination(for: HomeDestination.self) { destination in
                 switch destination {
                 case .muteAudio:
-                    MuteAudioView()
+                    MuteAudioView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 case .textEmoji:
                     TextEmojiView(isTabBarHidden: $isTabBarHidden)
@@ -51,7 +51,7 @@ struct HomeView: View {
                     TextStyleDesignView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 case .videoConvertor:
-                    VideoConvertorView()
+                    VideoConvertorView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -60,15 +60,36 @@ struct HomeView: View {
     }
     
     var headerView: some View {
-        HeaderView(
-            leftButtonImageName: "ic_setting",
-            rightButtonImageName: "ic_pro",
-            headerTitle: appName,
-            leftButtonAction: {
-            },
-            rightButtonAction: {
+        ZStack {
+            GradientView()
+            VStack {
+                Spacer()
+                HStack {
+                    Button {
+                        
+                    } label: {
+                        Image("ic_setting")
+                            .foregroundColor(.white)
+                    }
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                    Text(appName)
+                        .font(FontConstants.SyneFonts.semiBold(size: 23))
+                        .foregroundStyle(Color.white)
+                    Spacer()
+                    Button(action: {
+                        
+                    }) {
+                        Image("ic_pro")
+                            .foregroundColor(.white)
+                    }
+                }
+                .padding(.bottom, 20)
+                .padding(.horizontal, 20)
             }
-        )
+        }
+        .frame(height: UIScreen.main.bounds.height * 0.15)
     }
     
     var videoListView: some View {
@@ -106,8 +127,14 @@ struct HomeView: View {
                     Spacer()
                 }
             case .notDetermined:
-                ProgressView("Requesting access...")
-                    .padding()
+                VStack {
+                    Spacer()
+                    ProgressView("Requesting access...")
+                        .font(FontConstants.MontserratFonts.regular(size: 15))
+                        .foregroundColor(.black)
+                        .padding()
+                    Spacer()
+                }
             @unknown default:
                 VStack {
                     Spacer()
@@ -208,6 +235,7 @@ struct VideoThumbnailView: View {
                             .foregroundStyle(textGrayColor)
                             .lineLimit(1)
                     }
+                    Spacer()
                 }
                 .padding(10)
                 .background(Color.white)

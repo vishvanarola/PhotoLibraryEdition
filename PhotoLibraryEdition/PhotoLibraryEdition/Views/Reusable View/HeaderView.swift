@@ -18,37 +18,41 @@ struct HeaderView: View {
         ZStack {
             GradientView()
             VStack {
-                 Spacer()
-                 HStack {
-                     Button {
-                         leftButtonAction()
-                     } label: {
-                         Image(leftButtonImageName)
-                             .foregroundColor(.white)
-                     }
-                     Spacer()
-                     if (rightButtonImageName == nil) {
-                         Spacer()
-                     }
-                     Text(headerTitle)
-                         .font(FontConstants.SyneFonts.semiBold(size: 23))
-                         .foregroundStyle(Color.white)
-                     Spacer()
-                     if let rightImage = rightButtonImageName {
-                         Button(action: {
-                             rightButtonAction?()
-                         }) {
-                             Image(rightImage)
-                                 .foregroundColor(.white)
-                         }
-                     } else {
-                         Spacer()
-                         Spacer()
-                     }
-                 }
-                 .padding(.bottom, 20)
-                 .padding(.horizontal, 20)
-             }
+                Spacer()
+                HStack {
+                    Button {
+                        leftButtonAction()
+                    } label: {
+                        Image(leftButtonImageName)
+                            .resizable()
+                            .foregroundColor(.white)
+                            .frame(width: 30, height: 30)
+                    }
+                    Spacer()
+                    if (rightButtonImageName == nil) {
+                        Spacer()
+                    }
+                    Text(headerTitle)
+                        .font(FontConstants.SyneFonts.semiBold(size: 23))
+                        .foregroundStyle(Color.white)
+                    Spacer()
+                    if let rightImage = rightButtonImageName {
+                        Button(action: {
+                            rightButtonAction?()
+                        }) {
+                            Image(rightImage)
+                                .resizable()
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                        }
+                    } else {
+                        Spacer()
+                        Spacer()
+                    }
+                }
+                .padding(.bottom, 20)
+                .padding(.horizontal, 20)
+            }
         }
         .frame(height: UIScreen.main.bounds.height * 0.15)
     }

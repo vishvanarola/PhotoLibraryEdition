@@ -1,45 +1,32 @@
 //
-//  LockScreenView.swift
+//  ForgotPasswordView.swift
 //  PhotoLibraryEdition
 //
-//  Created by vishva narola on 19/06/25.
+//  Created by vishva narola on 25/06/25.
 //
 
 import SwiftUI
 
-struct LockScreenView: View {
-    @Binding var selectedTab: CustomTab
+struct ForgotPasswordView: View {
+    @Environment(\.presentationMode) var presentationMode
     @State private var passwordFields: [String] = Array(repeating: "", count: 4)
     @State private var currentIndex: Int = 0
     @State var password: String = ""
-    @State private var path = NavigationPath()
     @Binding var isTabBarHidden: Bool
     
-    enum LockScreenRoute: Hashable {
-        case forgotPassword
-    }
-    
     var body: some View {
-        NavigationStack(path: $path) {
-            VStack(spacing: 20) {
-                headerView
-                ScrollView {
-                    passwordView
-                    passwordTextFieldView
-                    numberPad
-                    forgotPassButton
-                }
-                .padding(.horizontal, 20)
+        VStack(spacing: 20) {
+            headerView
+            VStack {
+                forgotPasswordView
+                passwordTextFieldView
+                numberPad
             }
-            .ignoresSafeArea()
-            .navigationBarBackButtonHidden(true)
-            .navigationDestination(for: LockScreenRoute.self) { route in
-                switch route {
-                case .forgotPassword:
-                    ForgotPasswordView(isTabBarHidden: $isTabBarHidden)
-                }
-            }
+            .padding(.horizontal, 20)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea()
+        .navigationBarBackButtonHidden(true)
     }
     
     var headerView: some View {
@@ -48,23 +35,29 @@ struct LockScreenView: View {
             rightButtonImageName: nil,
             headerTitle: "Lock",
             leftButtonAction: {
-                withAnimation {
-                    selectedTab = .home
-                }
+                isTabBarHidden = false
+                presentationMode.wrappedValue.dismiss()
             },
             rightButtonAction: nil
         )
     }
     
-    var passwordView: some View {
+    var forgotPasswordView: some View {
         VStack(spacing: 10) {
-            HStack(spacing: 10) {
-                Image("ic_lock_screen")
-                Text("Password")
-                    .font(FontConstants.MontserratFonts.semiBold(size: 25))
-                    .foregroundStyle(Color.black)
-            }
-            Text("Enter your Four Digit Password")
+            Text("Forgot Password?")
+                .font(FontConstants.MontserratFonts.bold(size: 25))
+                .overlay(
+                    LinearGradient(
+                        colors: [redThemeColor, pinkGradientColor],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .mask(
+                    Text("Forgot Password?")
+                        .font(FontConstants.MontserratFonts.bold(size: 25))
+                )
+            Text("Click here to reset it and regain access to your account.")
                 .font(FontConstants.MontserratFonts.medium(size: 20))
                 .foregroundStyle(Color.black)
                 .multilineTextAlignment(.center)
@@ -80,7 +73,7 @@ struct LockScreenView: View {
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(currentIndex == index ? redThemeColor : Color.black, lineWidth: currentIndex == index ? 1.5 : 1)
+                            .stroke(currentIndex == index ? redThemeColor : Color.black, lineWidth: 1)
                     )
                     .font(.system(size: 24, weight: .bold))
                     .onTapGesture {
@@ -169,23 +162,8 @@ struct LockScreenView: View {
         currentIndex = 0
         password = ""
     }
-    
-    var forgotPassButton: some View {
-        Button {
-            isTabBarHidden = true
-            path.append(LockScreenRoute.forgotPassword)
-        } label: {
-            Text("Forgot Password?")
-                .font(FontConstants.MontserratFonts.medium(size: 18))
-                .foregroundStyle(textGrayColor)
-        }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear
-                .frame(height: 100)
-        }
-    }
 }
 
 #Preview {
-    LockScreenView(selectedTab: .constant(.lock), isTabBarHidden: .constant(false))
+    ForgotPasswordView(isTabBarHidden: .constant(true))
 }
