@@ -11,7 +11,7 @@ struct TextRepeaterView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var enterTextInput: String = ""
     @State private var repeaterCountInput: String = ""
-    @State private var isAddSpaceSelected: Bool = true
+    @State private var isAddSpaceSelected: Bool = false
     @State private var isNewLineSelected: Bool = false
     @State private var outputText: String = ""
     @Binding var isTabBarHidden: Bool
@@ -135,5 +135,6 @@ struct TextRepeaterView: View {
         }
         
         outputText = Array(repeating: enterTextInput, count: count).joined(separator: separator)
+        PremiumManager.shared.markUsed(feature: PremiumFeature.textRepeat)
     }
 }

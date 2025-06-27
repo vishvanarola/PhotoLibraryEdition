@@ -113,7 +113,7 @@ struct VideoConvertorView: View {
                     }) {
                         Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                             .resizable()
-                            .frame(width: 60, height: 60)
+                            .frame(width: 50, height: 50)
                             .foregroundColor(redThemeColor.opacity(0.5))
                             .shadow(radius: 10)
                     }
@@ -191,6 +191,7 @@ struct VideoConvertorView: View {
                             self.isPlaying = false
                             configurePlayer(newPlayer)
                             self.showToast = true
+                            PremiumManager.shared.markUsed(feature: PremiumFeature.videoConverter)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 self.showToast = false
                             }

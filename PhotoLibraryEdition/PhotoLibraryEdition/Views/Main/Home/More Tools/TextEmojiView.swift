@@ -90,6 +90,7 @@ struct TextEmojiView: View {
     
     func emojiPattern(for letter: String, e: String) -> String {
         guard !e.isEmpty else { return "" }
+        PremiumManager.shared.markUsed(feature: PremiumFeature.textToEmoji)
         
         switch letter.uppercased() {
         case "A":

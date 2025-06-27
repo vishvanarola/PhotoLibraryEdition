@@ -8,6 +8,11 @@
 import SwiftUI
 import SwiftData
 
+enum MyFilesRoute: Hashable {
+    case photosCollage(Collage)
+    case premium
+}
+
 struct MyFilesView: View {
     @State private var showCreateCollage = false
     @State private var collageToEdit: Collage? = nil
@@ -15,14 +20,11 @@ struct MyFilesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Collage.createdAt, order: .reverse) private var collages: [Collage]
     @Binding var selectedTab: CustomTab
-    @State private var path = NavigationPath()
-    
-    enum MyFilesRoute: Hashable {
-        case photosCollage(Collage)
-    }
+    @State private var navigationPath = NavigationPath()
+    @Binding var isTabBarHidden: Bool
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 VStack {
                     headerView
@@ -38,7 +40,10 @@ struct MyFilesView: View {
             .navigationDestination(for: MyFilesRoute.self) { route in
                 switch route {
                 case .photosCollage(let collage):
-                    PhotosCollageView(collage: collage)
+                    PhotosCollageView(collage: collage, isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                case .premium:
+                    PremiumView(isTabBarHidden: $isTabBarHidden)
+                        .navigationBarBackButtonHidden(true)
                 }
             }
         }
@@ -55,9 +60,15 @@ struct MyFilesView: View {
                 }
             },
             rightButtonAction: {
-                withAnimation {
-                    showCreateCollage = true
-                    collageToEdit = nil
+                if PremiumManager.shared.hasUsed(feature: PremiumFeature.createCollage) {
+                    isHideTabBackPremium = false
+                    isTabBarHidden = true
+                    navigationPath.append(MyFilesRoute.premium)
+                } else {
+                    withAnimation {
+                        showCreateCollage = true
+                        collageToEdit = nil
+                    }
                 }
             }
         )
@@ -110,7 +121,8 @@ struct MyFilesView: View {
                             .tint(.blue)
                         }
                         .onTapGesture {
-                            path.append(MyFilesRoute.photosCollage(collage))
+                            isTabBarHidden = true
+                            navigationPath.append(MyFilesRoute.photosCollage(collage))
                         }
                     }
                 }
@@ -140,5 +152,5 @@ struct MyFilesView: View {
 }
 
 #Preview {
-    MyFilesView(selectedTab: .constant(.myFiles))
+    MyFilesView(selectedTab: .constant(.myFiles), isTabBarHidden: .constant(false))
 }

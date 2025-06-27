@@ -116,6 +116,7 @@ struct TextStyleDesignView: View {
                             } else {
                                 UIPasteboard.general.string = textToCopy
                             }
+                            PremiumManager.shared.markUsed(feature: PremiumFeature.textStyleDesign)
                             // Show success message
                             showCopiedToast()
                         }

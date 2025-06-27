@@ -23,7 +23,7 @@ struct TabBarView: View {
                 case .home:
                     HomeView(isTabBarHidden: $isTabBarHidden)
                 case .myFiles:
-                    MyFilesView(selectedTab: $selectedTab)
+                    MyFilesView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden)
                 case .lock:
                     LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden)
                 }

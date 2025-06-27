@@ -87,6 +87,7 @@ struct CreateCollageView: View {
                     
                     do {
                         try modelContext.save()
+                        PremiumManager.shared.markUsed(feature: PremiumFeature.createCollage)
                         withAnimation {
                             isPresented = false
                         }

@@ -8,21 +8,6 @@
 import Foundation
 import SwiftData
 
-//@Model
-//final class Collage {
-//    var id: UUID
-//    var name: String
-//    var createdAt: Date
-//    var imageDatas: [Data]
-//
-//    init(name: String, imageDatas: [Data] = []) {
-//        self.id = UUID()
-//        self.name = name
-//        self.createdAt = Date()
-//        self.imageDatas = imageDatas
-//    }
-//}
-
 @Model
 final class Collage {
     var id: UUID

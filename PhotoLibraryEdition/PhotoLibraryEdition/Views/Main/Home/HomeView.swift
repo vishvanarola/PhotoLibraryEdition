@@ -14,6 +14,8 @@ enum HomeDestination: Hashable {
     case textRepeater
     case textStyleDesign
     case videoConvertor
+    case settings
+    case premium
 }
 
 struct HomeView: View {
@@ -53,6 +55,12 @@ struct HomeView: View {
                 case .videoConvertor:
                     VideoConvertorView(isTabBarHidden: $isTabBarHidden)
                         .navigationBarBackButtonHidden(true)
+                case .settings:
+                    SettingsView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                        .navigationBarBackButtonHidden(true)
+                case .premium:
+                    PremiumView(isTabBarHidden: $isTabBarHidden)
+                        .navigationBarBackButtonHidden(true)
                 }
             }
         }
@@ -66,7 +74,8 @@ struct HomeView: View {
                 Spacer()
                 HStack {
                     Button {
-                        
+                        isTabBarHidden = true
+                        navigationPath.append(HomeDestination.settings)
                     } label: {
                         Image("ic_setting")
                             .foregroundColor(.white)
@@ -79,7 +88,9 @@ struct HomeView: View {
                         .foregroundStyle(Color.white)
                     Spacer()
                     Button(action: {
-                        
+                        isHideTabBackPremium = false
+                        isTabBarHidden = true
+                        navigationPath.append(HomeDestination.premium)
                     }) {
                         Image("ic_pro")
                             .foregroundColor(.white)
@@ -171,11 +182,32 @@ struct HomeView: View {
         }
     }
     
+    func premiumFeature(for destination: HomeDestination) -> PremiumFeature? {
+        switch destination {
+        case .textRepeater: return .textRepeat
+        case .textEmoji: return .textToEmoji
+        case .textStyleDesign: return .textStyleDesign
+        case .muteAudio: return .muteAudio
+        case .videoConvertor: return .videoConverter
+        default: return nil
+        }
+    }
+    
     func moreToolsButton(toolName: String, destination: HomeDestination) -> some View {
         HStack {
             Button {
                 isTabBarHidden = true
-                navigationPath.append(destination)
+                
+                if let feature = premiumFeature(for: destination) {
+                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) {
+                        navigationPath.append(destination)
+                    } else {
+                        isHideTabBackPremium = false
+                        navigationPath.append(HomeDestination.premium)
+                    }
+                } else {
+                    navigationPath.append(destination)
+                }
             } label: {
                 Text(toolName)
                     .font(FontConstants.MontserratFonts.medium(size: 15))
@@ -286,5 +318,5 @@ struct VideoThumbnailView: View {
 }
 
 #Preview {
-    HomeView(isTabBarHidden: .constant(true))
+    HomeView(isTabBarHidden: .constant(false))
 }

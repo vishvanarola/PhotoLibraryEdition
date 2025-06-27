@@ -15,6 +15,8 @@ struct PhotosCollageView: View {
     @Bindable var collage: Collage
     @State private var showPhotoPicker = false
     @State private var selectedItems: [PhotosPickerItem] = []
+    @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         VStack {
@@ -63,10 +65,16 @@ struct PhotosCollageView: View {
             rightButtonImageName: "ic_plus",
             headerTitle: collage.name,
             leftButtonAction: {
+                isTabBarHidden = false
                 presentationMode.wrappedValue.dismiss()
             },
             rightButtonAction: {
-                showPhotoPicker = true
+                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInCollage) {
+                    isHideTabBackPremium = true
+                    navigationPath.append(MyFilesRoute.premium)
+                } else {
+                    showPhotoPicker = true
+                }
             }
         )
     }
@@ -80,13 +88,10 @@ struct PhotosCollageView: View {
             }
         }
         do {
+            PremiumManager.shared.markUsed(feature: PremiumFeature.addPhotosInCollage)
             try modelContext.save()
         } catch {
             print("⚠️ Error saving images: \(error)")
         }
     }
-}
-
-#Preview {
-    PhotosCollageView(collage: .init(name: "Demo"))
 }
