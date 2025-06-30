@@ -16,9 +16,9 @@ struct PlanOption: Identifiable {
 }
 
 struct PremiumView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var selectedPlanIndex = 2
     @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     let plans: [PlanOption] = [
         PlanOption(title: "₹ 399/ Weekly", subtitle: "₹ 399/week", price: "₹ 399", isHighlighted: false),
@@ -75,7 +75,7 @@ struct PremiumView: View {
             Spacer()
             Button {
                 isTabBarHidden = isHideTabBackPremium
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             } label: {
                 Image("ic_close")
                     .resizable()

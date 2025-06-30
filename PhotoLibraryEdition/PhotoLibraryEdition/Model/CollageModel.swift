@@ -14,7 +14,7 @@ final class Collage {
     var name: String
     var createdAt: Date
     @Relationship(deleteRule: .cascade) var images: [CollageImage] = []
-
+    
     init(name: String) {
         self.id = UUID()
         self.name = name
@@ -27,7 +27,7 @@ final class CollageImage {
     var id: UUID
     var data: Data
     var collage: Collage?
-
+    
     init(data: Data) {
         self.id = UUID()
         self.data = data

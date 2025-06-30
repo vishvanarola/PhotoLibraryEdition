@@ -11,7 +11,6 @@ import AVKit
 import AVFoundation
 
 struct VideoConvertorView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var isVideoPicked = false
     @State private var showVideoPicker = false
     @State private var pickedVideoURL: URL? = nil
@@ -20,6 +19,7 @@ struct VideoConvertorView: View {
     @State private var isPlaying = false
     @State private var showToast = false
     @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         ZStack {
@@ -70,7 +70,7 @@ struct VideoConvertorView: View {
             headerTitle: "Video Convertor",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: {
                 if isVideoPicked, let convertedURL = convertedVideoURL {

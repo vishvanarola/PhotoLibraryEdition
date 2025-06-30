@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct TextEmojiView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var enterTextInput: String = ""
     @State private var emojiInput: String = ""
     @State private var outputText: String = ""
     @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
      
     var body: some View {
         VStack {
@@ -38,7 +38,7 @@ struct TextEmojiView: View {
             headerTitle: "Text to Emoji",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: nil
         )

@@ -15,6 +15,7 @@ enum PremiumFeature: String, CaseIterable {
     case videoConverter
     case createCollage
     case addPhotosInCollage
+    case addPhotosInHide
 }
 
 class PremiumManager {

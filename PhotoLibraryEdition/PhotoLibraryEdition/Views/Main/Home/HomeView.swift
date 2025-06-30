@@ -41,25 +41,25 @@ struct HomeView: View {
             .navigationDestination(for: HomeDestination.self) { destination in
                 switch destination {
                 case .muteAudio:
-                    MuteAudioView(isTabBarHidden: $isTabBarHidden)
+                    MuteAudioView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .textEmoji:
-                    TextEmojiView(isTabBarHidden: $isTabBarHidden)
+                    TextEmojiView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .textRepeater:
-                    TextRepeaterView(isTabBarHidden: $isTabBarHidden)
+                    TextRepeaterView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .textStyleDesign:
-                    TextStyleDesignView(isTabBarHidden: $isTabBarHidden)
+                    TextStyleDesignView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .videoConvertor:
-                    VideoConvertorView(isTabBarHidden: $isTabBarHidden)
+                    VideoConvertorView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .settings:
                     SettingsView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 }
             }

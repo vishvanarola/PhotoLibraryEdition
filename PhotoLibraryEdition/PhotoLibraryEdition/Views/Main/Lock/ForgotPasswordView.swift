@@ -8,25 +8,33 @@
 import SwiftUI
 
 struct ForgotPasswordView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var passwordFields: [String] = Array(repeating: "", count: 4)
     @State private var currentIndex: Int = 0
     @State var password: String = ""
+    @State var confirmedPassword: String = ""
+    @State var headingTitle: String = "Click here to reset it and regain access to your account."
+    @State private var isConfirmingPassword: Bool = false
+    @State private var showMismatchAlert: Bool = false
+    @Binding var navigationPath: NavigationPath
     @Binding var isTabBarHidden: Bool
     
     var body: some View {
         VStack(spacing: 20) {
             headerView
-            VStack {
+            ScrollView {
                 forgotPasswordView
                 passwordTextFieldView
                 numberPad
             }
             .padding(.horizontal, 20)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
+        .alert("Passwords do not match\nPlease set them again", isPresented: $showMismatchAlert) {
+            Button("OK", role: .cancel) {
+                resetAll()
+            }
+        }
     }
     
     var headerView: some View {
@@ -36,7 +44,7 @@ struct ForgotPasswordView: View {
             headerTitle: "Lock",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: nil
         )
@@ -57,7 +65,7 @@ struct ForgotPasswordView: View {
                     Text("Forgot Password?")
                         .font(FontConstants.MontserratFonts.bold(size: 25))
                 )
-            Text("Click here to reset it and regain access to your account.")
+            Text(headingTitle)
                 .font(FontConstants.MontserratFonts.medium(size: 20))
                 .foregroundStyle(Color.black)
                 .multilineTextAlignment(.center)
@@ -73,7 +81,7 @@ struct ForgotPasswordView: View {
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(currentIndex == index ? redThemeColor : Color.black, lineWidth: 1)
+                            .stroke(currentIndex == index ? redThemeColor : Color.black, lineWidth: currentIndex == index ? 1.5 : 1)
                     )
                     .font(.system(size: 24, weight: .bold))
                     .onTapGesture {
@@ -142,19 +150,49 @@ struct ForgotPasswordView: View {
         
         if currentIndex < 3 {
             currentIndex += 1
-        } else {
-            password = passwordFields.joined()
-            print("Password entered: \(password)")
         }
     }
     
     func cancelTapped() {
-        resetPassword()
+        resetAll()
     }
     
     func doneTapped() {
-        password = passwordFields.joined()
-        print("Password confirmed: \(password)")
+        let entered = passwordFields.joined()
+        if entered.count < 4 { return }
+        
+        if !isConfirmingPassword {
+            password = entered
+            headingTitle = "Confirm your reseted four digit password"
+            isConfirmingPassword = true
+            resetPasswordFields()
+        } else {
+            confirmedPassword = entered
+            if password == confirmedPassword {
+                UserDefaults.standard.set(password, forKey: "userPassword")
+                headingTitle = "Password set successfully"
+                resetPasswordFields()
+                print("✅ Password set successfully: \(password)")
+                isTabBarHidden = false
+                navigationPath.removeLast()
+            } else {
+                showMismatchAlert = true
+                resetAll()
+            }
+        }
+    }
+    
+    func resetPasswordFields() {
+        passwordFields = Array(repeating: "", count: 4)
+        currentIndex = 0
+    }
+    
+    func resetAll() {
+        password = ""
+        confirmedPassword = ""
+        isConfirmingPassword = false
+        headingTitle = "Click here to reset it and regain access to your account."
+        resetPasswordFields()
     }
     
     func resetPassword() {
@@ -162,8 +200,4 @@ struct ForgotPasswordView: View {
         currentIndex = 0
         password = ""
     }
-}
-
-#Preview {
-    ForgotPasswordView(isTabBarHidden: .constant(true))
 }

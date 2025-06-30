@@ -11,7 +11,6 @@ import AVKit
 import AVFoundation
 
 struct MuteAudioView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var isVideoPicked = false
     @State private var showVideoPicker = false
     @State private var pickedVideoURL: URL? = nil
@@ -22,6 +21,7 @@ struct MuteAudioView: View {
     @State private var isPlaying = false
     @State private var showToast = false
     @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         ZStack {
@@ -73,7 +73,7 @@ struct MuteAudioView: View {
             headerTitle: "Mute Audio",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: {
                 if isVideoPicked, let mutedURL = mutedVideoURL {

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.presentationMode) var presentationMode
     @Binding var isTabBarHidden: Bool
     @State private var isShowingShareSheet = false
     @Binding var navigationPath: NavigationPath
@@ -38,7 +37,7 @@ struct SettingsView: View {
             leftButtonAction: {
                 isHideTabBackPremium = true
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: nil
         )

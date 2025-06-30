@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct TextStyleDesignView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State var previewText: String = ""
     @State private var selectedFont: String? = nil
     @Binding var isTabBarHidden: Bool
     @State private var showToast = false
+    @Binding var navigationPath: NavigationPath
     
     let fontArray = ["Aloevera", "AngelinaPersonal", "BoogieBoysExtrude", "DarlingtonDemo", "Dirtyboy", "EnjelinaDemo", "Inferno", "KingstoneDemoRegular", "KnightWarrior", "MonainnRegular", "MouldyCheeseRegular", "RustyAttackDemo", "Scripto", "SkiwarRegular", "SoulsideBetrayed", "SuperFunky", "SuperRugged", "SuperScribble", "TheHeartOfEverythingDemo", "VeryVeryPunkFont"]
     
@@ -49,7 +49,7 @@ struct TextStyleDesignView: View {
             headerTitle: "Text Style",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: nil
         )

@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct TextRepeaterView: View {
-    @Environment(\.presentationMode) var presentationMode
     @State private var enterTextInput: String = ""
     @State private var repeaterCountInput: String = ""
     @State private var isAddSpaceSelected: Bool = false
     @State private var isNewLineSelected: Bool = false
     @State private var outputText: String = ""
     @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         VStack {
@@ -41,7 +41,7 @@ struct TextRepeaterView: View {
             headerTitle: "Text Repeater",
             leftButtonAction: {
                 isTabBarHidden = false
-                presentationMode.wrappedValue.dismiss()
+                navigationPath.removeLast()
             },
             rightButtonAction: nil
         )

@@ -21,6 +21,7 @@ struct PhotoLibraryEditionApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Collage.self,
+            HidePhotoModel.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         

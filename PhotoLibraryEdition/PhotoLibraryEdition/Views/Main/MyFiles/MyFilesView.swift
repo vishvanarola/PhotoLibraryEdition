@@ -16,7 +16,6 @@ enum MyFilesRoute: Hashable {
 struct MyFilesView: View {
     @State private var showCreateCollage = false
     @State private var collageToEdit: Collage? = nil
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Collage.createdAt, order: .reverse) private var collages: [Collage]
     @Binding var selectedTab: CustomTab
@@ -42,7 +41,7 @@ struct MyFilesView: View {
                 case .photosCollage(let collage):
                     PhotosCollageView(collage: collage, isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 }
             }

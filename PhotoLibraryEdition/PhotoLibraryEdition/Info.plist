@@ -38,6 +38,6 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to display your videos.</string>
 	<key>UIUserInterfaceStyle</key>
-	<string>LIGHT</string>
+	<string>Light</string>
 </dict>
 </plist>

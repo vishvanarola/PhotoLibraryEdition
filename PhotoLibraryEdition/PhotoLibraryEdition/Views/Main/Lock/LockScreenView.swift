@@ -7,36 +7,70 @@
 
 import SwiftUI
 
+enum LockRoute: Hashable {
+    case forgotPassword
+    case hidePhotos
+    case premium
+}
+
 struct LockScreenView: View {
     @Binding var selectedTab: CustomTab
     @State private var passwordFields: [String] = Array(repeating: "", count: 4)
     @State private var currentIndex: Int = 0
     @State var password: String = ""
-    @State private var path = NavigationPath()
+    @State var confirmedPassword: String = ""
     @Binding var isTabBarHidden: Bool
-    
-    enum LockScreenRoute: Hashable {
-        case forgotPassword
-    }
+    @State var headingTitle: String = "Set your four digit password"
+    @State private var isConfirmingPassword: Bool = false
+    @State private var showMismatchAlert: Bool = false
+    @State private var isPasswordAlreadySet: Bool = false
+    @State private var showWrongPasswordAlert: Bool = false
+    @State private var navigationPath = NavigationPath()
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigationPath) {
             VStack(spacing: 20) {
                 headerView
                 ScrollView {
                     passwordView
                     passwordTextFieldView
                     numberPad
-                    forgotPassButton
+                    if let saved = UserDefaults.standard.string(forKey: "userPassword"), saved.isEmpty == false {
+                        forgotPassButton
+                    }
                 }
                 .padding(.horizontal, 20)
             }
+            .onAppear {
+                currentIndex = 0
+                if let saved = UserDefaults.standard.string(forKey: "userPassword") {
+                    isPasswordAlreadySet = !saved.isEmpty
+                    headingTitle = "Enter your four digit password"
+                }
+            }
             .ignoresSafeArea()
             .navigationBarBackButtonHidden(true)
-            .navigationDestination(for: LockScreenRoute.self) { route in
+            .alert("Passwords do not match\nPlease set them again", isPresented: $showMismatchAlert) {
+                Button("OK", role: .cancel) {
+                    resetAll()
+                }
+            }
+            .alert("Incorrect Password", isPresented: $showWrongPasswordAlert) {
+                Button("Try Again", role: .cancel) {
+                    resetPasswordFields()
+                }
+            }
+            .navigationDestination(for: LockRoute.self) { route in
                 switch route {
                 case .forgotPassword:
-                    ForgotPasswordView(isTabBarHidden: $isTabBarHidden)
+                    ForgotPasswordView(navigationPath: $navigationPath, isTabBarHidden: $isTabBarHidden)
+                        .navigationBarBackButtonHidden(true)
+                case .hidePhotos:
+                    HidePhotoView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                        .navigationBarBackButtonHidden(true)
+                case .premium:
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                        .navigationBarBackButtonHidden(true)
                 }
             }
         }
@@ -64,7 +98,7 @@ struct LockScreenView: View {
                     .font(FontConstants.MontserratFonts.semiBold(size: 25))
                     .foregroundStyle(Color.black)
             }
-            Text("Enter your Four Digit Password")
+            Text(headingTitle)
                 .font(FontConstants.MontserratFonts.medium(size: 20))
                 .foregroundStyle(Color.black)
                 .multilineTextAlignment(.center)
@@ -131,6 +165,21 @@ struct LockScreenView: View {
         }
     }
     
+    var forgotPassButton: some View {
+        Button {
+            isTabBarHidden = true
+            navigationPath.append(LockRoute.forgotPassword)
+        } label: {
+            Text("Forgot Password?")
+                .font(FontConstants.MontserratFonts.medium(size: 18))
+                .foregroundStyle(textGrayColor)
+        }
+        .safeAreaInset(edge: .bottom) {
+            Color.clear
+                .frame(height: 100)
+        }
+    }
+    
     func numberText(_ text: Int, action: @escaping (Int) -> Void) -> some View {
         Button {
             action(text)
@@ -149,40 +198,77 @@ struct LockScreenView: View {
         
         if currentIndex < 3 {
             currentIndex += 1
-        } else {
-            password = passwordFields.joined()
-            print("Password entered: \(password)")
         }
     }
     
     func cancelTapped() {
-        resetPassword()
+        resetAll()
     }
     
     func doneTapped() {
-        password = passwordFields.joined()
-        print("Password confirmed: \(password)")
+        let entered = passwordFields.joined()
+        if entered.count < 4 { return }
+        
+        if isPasswordAlreadySet {
+            if entered == UserDefaults.standard.string(forKey: "userPassword") {
+                print("✅ Password matched. Proceed to HidePhotoView")
+                resetPasswordFields()
+                isTabBarHidden = true
+                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) {
+                    isHideTabBackPremium = false
+                    navigationPath.append(LockRoute.premium)
+                } else {
+                    navigationPath.append(LockRoute.hidePhotos)
+                }
+            } else {
+                showWrongPasswordAlert = true
+                resetPasswordFields()
+            }
+        } else {
+            if !isConfirmingPassword {
+                password = entered
+                headingTitle = "Confirm your four digit password"
+                isConfirmingPassword = true
+                resetPasswordFields()
+            } else {
+                confirmedPassword = entered
+                if password == confirmedPassword {
+                    UserDefaults.standard.set(password, forKey: "userPassword")
+                    headingTitle = "Password set successfully"
+                    resetPasswordFields()
+                    isTabBarHidden = true
+                    if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) {
+                        isHideTabBackPremium = false
+                        navigationPath.append(LockRoute.premium)
+                    } else {
+                        navigationPath.append(LockRoute.hidePhotos)
+                    }
+                    print("✅ Password set successfully: \(password)")
+                } else {
+                    showMismatchAlert = true
+                    resetAll()
+                }
+            }
+        }
+    }
+    
+    func resetPasswordFields() {
+        passwordFields = Array(repeating: "", count: 4)
+        currentIndex = 0
+    }
+    
+    func resetAll() {
+        password = ""
+        confirmedPassword = ""
+        isConfirmingPassword = false
+        headingTitle = isPasswordAlreadySet ? "Enter your four digit password" : "Set your four digit password"
+        resetPasswordFields()
     }
     
     func resetPassword() {
         passwordFields = Array(repeating: "", count: 4)
         currentIndex = 0
         password = ""
-    }
-    
-    var forgotPassButton: some View {
-        Button {
-            isTabBarHidden = true
-            path.append(LockScreenRoute.forgotPassword)
-        } label: {
-            Text("Forgot Password?")
-                .font(FontConstants.MontserratFonts.medium(size: 18))
-                .foregroundStyle(textGrayColor)
-        }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear
-                .frame(height: 100)
-        }
     }
 }
 
