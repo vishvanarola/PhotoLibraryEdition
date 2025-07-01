@@ -21,6 +21,7 @@ struct MyFilesView: View {
     @Binding var selectedTab: CustomTab
     @State private var navigationPath = NavigationPath()
     @Binding var isTabBarHidden: Bool
+    @Binding var isShowingPremium: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -41,7 +42,7 @@ struct MyFilesView: View {
                 case .photosCollage(let collage):
                     PhotosCollageView(collage: collage, isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -59,7 +60,7 @@ struct MyFilesView: View {
                 }
             },
             rightButtonAction: {
-                if PremiumManager.shared.hasUsed(feature: PremiumFeature.createCollage) {
+                if PremiumManager.shared.hasUsed(feature: PremiumFeature.createCollage) && !PremiumManager.shared.isPremium {
                     isHideTabBackPremium = false
                     isTabBarHidden = true
                     navigationPath.append(MyFilesRoute.premium)
@@ -148,8 +149,4 @@ struct MyFilesView: View {
             print("Failed to delete collage: \(error)")
         }
     }
-}
-
-#Preview {
-    MyFilesView(selectedTab: .constant(.myFiles), isTabBarHidden: .constant(false))
 }

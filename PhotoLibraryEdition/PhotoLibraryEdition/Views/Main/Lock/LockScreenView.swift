@@ -26,6 +26,7 @@ struct LockScreenView: View {
     @State private var isPasswordAlreadySet: Bool = false
     @State private var showWrongPasswordAlert: Bool = false
     @State private var navigationPath = NavigationPath()
+    @Binding var isShowingPremium: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -69,7 +70,7 @@ struct LockScreenView: View {
                     HidePhotoView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -174,10 +175,6 @@ struct LockScreenView: View {
                 .font(FontConstants.MontserratFonts.medium(size: 18))
                 .foregroundStyle(textGrayColor)
         }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear
-                .frame(height: 100)
-        }
     }
     
     func numberText(_ text: Int, action: @escaping (Int) -> Void) -> some View {
@@ -214,7 +211,7 @@ struct LockScreenView: View {
                 print("✅ Password matched. Proceed to HidePhotoView")
                 resetPasswordFields()
                 isTabBarHidden = true
-                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) {
+                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
                     isHideTabBackPremium = false
                     navigationPath.append(LockRoute.premium)
                 } else {
@@ -237,7 +234,7 @@ struct LockScreenView: View {
                     headingTitle = "Password set successfully"
                     resetPasswordFields()
                     isTabBarHidden = true
-                    if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) {
+                    if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
                         isHideTabBackPremium = false
                         navigationPath.append(LockRoute.premium)
                     } else {
@@ -270,8 +267,4 @@ struct LockScreenView: View {
         currentIndex = 0
         password = ""
     }
-}
-
-#Preview {
-    LockScreenView(selectedTab: .constant(.lock), isTabBarHidden: .constant(false))
 }

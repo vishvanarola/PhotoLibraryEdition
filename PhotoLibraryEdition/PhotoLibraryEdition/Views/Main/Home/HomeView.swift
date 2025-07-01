@@ -29,6 +29,7 @@ struct HomeView: View {
     ]
     @State private var navigationPath = NavigationPath()
     @Binding var isTabBarHidden: Bool
+    @Binding var isShowingPremium: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -59,7 +60,7 @@ struct HomeView: View {
                     SettingsView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -88,9 +89,10 @@ struct HomeView: View {
                         .foregroundStyle(Color.white)
                     Spacer()
                     Button(action: {
-                        isHideTabBackPremium = false
-                        isTabBarHidden = true
-                        navigationPath.append(HomeDestination.premium)
+                        PremiumManager.shared.isPremium.toggle()
+//                        isHideTabBackPremium = false
+//                        isTabBarHidden = true
+//                        navigationPath.append(HomeDestination.premium)
                     }) {
                         Image("ic_pro")
                             .foregroundColor(.white)
@@ -173,12 +175,8 @@ struct HomeView: View {
                     }
                     Spacer(minLength: 16)
                 }
-                .padding(.top, 5)
+                .padding(.vertical, 5)
             }
-        }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear
-                .frame(height: 100)
         }
     }
     
@@ -199,7 +197,7 @@ struct HomeView: View {
                 isTabBarHidden = true
                 
                 if let feature = premiumFeature(for: destination) {
-                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) {
+                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) && !PremiumManager.shared.isPremium {
                         navigationPath.append(destination)
                     } else {
                         isHideTabBackPremium = false
@@ -315,8 +313,4 @@ struct VideoThumbnailView: View {
         formatter.countStyle = .file
         return formatter.string(fromByteCount: Int64(bytes))
     }
-}
-
-#Preview {
-    HomeView(isTabBarHidden: .constant(false))
 }

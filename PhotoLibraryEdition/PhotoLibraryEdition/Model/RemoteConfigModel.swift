@@ -9,11 +9,11 @@ import Foundation
 
 struct RemoteAdsModel : Codable {
     var appOpen : String? = nil
-    var banner : String?? = nil
-    var interstitial : String?? = nil
-    var native : String?? = nil
-    var rewardedInterstitial : String?? = nil
-    var intergap : Int?? = nil
+    var banner : String? = nil
+    var interstitial : String? = nil
+    var native : String? = nil
+    var rewardedInterstitial : String? = nil
+    var intergap : Int? = nil
     
     init() {
         

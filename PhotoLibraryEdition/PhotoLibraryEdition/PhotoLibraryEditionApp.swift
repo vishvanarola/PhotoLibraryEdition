@@ -30,6 +30,10 @@ struct PhotoLibraryEditionApp: App {
                 }
             }
             
+            if let bannerAdUnitID = response.banner {
+                AdManager.shared.bannerAdUnitID = bannerAdUnitID
+            }
+            
         } failure: { error in
             print("error remote config fetch: \(error)")
         }
@@ -55,16 +59,19 @@ struct PhotoLibraryEditionApp: App {
                 .onAppear {
                     if !PremiumManager.shared.isPremium {
                         showAppOpenAd()
+                        showBannerAd()
                     }
                 }
                 .onReceive(adManager.$isAppOpenAdReady) { isReady in
                     if isReady && !PremiumManager.shared.isPremium {
                         showAppOpenAd()
+                        showBannerAd()
                     }
                 }
                 .onChange(of: scenePhase) { oldValue, newValue in
                     if newValue == .active && !PremiumManager.shared.isPremium {
                         showAppOpenAd()
+                        showBannerAd()
                     }
                 }
         }
@@ -72,13 +79,10 @@ struct PhotoLibraryEditionApp: App {
     }
     
     func showAppOpenAd() {
-        guard let rootVC = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first?.windows
-            .first?.rootViewController else {
-            return
-        }
-        
-        AdManager.shared.showAppOpenAdIfAvailable(from: rootVC)
+        AdManager.shared.showAppOpenAdIfAvailable(from: UIApplication.shared.rootVC)
+    }
+    
+    func showBannerAd() {
+        AdManager.shared.loadBannerAd(rootViewController: UIApplication.shared.rootVC)
     }
 }

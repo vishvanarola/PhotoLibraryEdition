@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let appName = "App Name"
+let appName = "FrameFox Tools"
 let remoteConfigAdFetchKey = "VideoTools"
 
 var isHideTabBackPremium: Bool = true

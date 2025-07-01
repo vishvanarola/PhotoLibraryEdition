@@ -15,7 +15,7 @@ struct SplashView: View {
             TabBarView()
         } else {
             VStack(spacing: 15) {
-                Image("ic_myfiles")
+                Image("appIcon")
                     .resizable()
                     .frame(width: 130, height: 130)
                     .foregroundColor(.primary)

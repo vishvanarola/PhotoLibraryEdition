@@ -12,9 +12,15 @@ class AdManager: NSObject, ObservableObject, FullScreenContentDelegate {
     
     @Published var isAppOpenAdReady = false
     
+    // MARK: App Open Ad Properties
     var appOpenAd: AppOpenAd?
     var appOpenAdUnitID: String = ""
     
+    // MARK: Banner Ad Properties
+    var bannerView: BannerView?
+    var bannerAdUnitID: String = ""
+    
+    // MARK: App Open Ad Methods
     func loadAppOpenAd(_ isOpenAd: Bool) {
         guard !appOpenAdUnitID.isEmpty else {
             print("App Open Ad unit ID is empty.")
@@ -37,7 +43,7 @@ class AdManager: NSObject, ObservableObject, FullScreenContentDelegate {
         }
     }
     
-    func showAppOpenAdIfAvailable(from rootViewController: UIViewController) {
+    func showAppOpenAdIfAvailable(from rootViewController: UIViewController?) {
         if let ad = appOpenAd {
             ad.present(from: rootViewController)
             isAppOpenAdReady = false
@@ -58,5 +64,18 @@ class AdManager: NSObject, ObservableObject, FullScreenContentDelegate {
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         print("Failed to present App Open Ad: \(error.localizedDescription)")
         loadAppOpenAd(false)
+    }
+    
+    // MARK: Banner Ad Methods
+    func loadBannerAd(rootViewController: UIViewController?, adSize: AdSize = AdSizeBanner) {
+        guard !bannerAdUnitID.isEmpty else {
+            print("Banner Ad unit ID is empty.")
+            return
+        }
+        bannerView = BannerView(adSize: adSize)
+        bannerView?.adUnitID = bannerAdUnitID
+        bannerView?.rootViewController = rootViewController
+        bannerView?.load(Request())
+        print("Banner Ad loading...")
     }
 }

@@ -14,39 +14,44 @@ enum CustomTab {
 struct TabBarView: View {
     @State private var selectedTab: CustomTab = .home
     @State private var isTabBarHidden: Bool = false
+    @State private var isShowingPremium: Bool = false
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Main content
+        VStack {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView(isTabBarHidden: $isTabBarHidden)
+                    HomeView(isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
                 case .myFiles:
-                    MyFilesView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden)
+                    MyFilesView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
                 case .lock:
-                    LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden)
+                    LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.white).ignoresSafeArea())
-            
-            // Custom Tab Bar
-            if !isTabBarHidden {
-                HStack {
-                    tabBarItem(tab: .home, icon: "ic_home", label: "Home")
-                    Spacer()
-                    tabBarItem(tab: .myFiles, icon: "ic_myfiles", label: "My Files")
-                    Spacer()
-                    tabBarItem(tab: .lock, icon: "ic_lock", label: "Lock")
+            Spacer()
+            VStack(spacing: 0) {
+                if !isTabBarHidden {
+                    HStack {
+                        tabBarItem(tab: .home, icon: "ic_home", label: "Home")
+                        Spacer()
+                        tabBarItem(tab: .myFiles, icon: "ic_myfiles", label: "My Files")
+                        Spacer()
+                        tabBarItem(tab: .lock, icon: "ic_lock", label: "Lock")
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 15)
+                    .background(
+                        Color.white
+                            .cornerRadius(30, corners: [.topLeft, .topRight])
+                            .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
+                    )
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 15)
-                .background(
-                    Color.white
-                        .cornerRadius(30, corners: [.topLeft, .topRight])
-                        .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
-                )
+                if !isShowingPremium && !PremiumManager.shared.isPremium {
+                    BannerAdView()
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .ignoresSafeArea()
@@ -67,7 +72,9 @@ struct TabBarView: View {
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
-            selectedTab = tab
+            withAnimation {
+                selectedTab = tab
+            }
         }
     }
 }
