@@ -21,7 +21,7 @@ struct MyFilesView: View {
     @Binding var selectedTab: CustomTab
     @State private var navigationPath = NavigationPath()
     @Binding var isTabBarHidden: Bool
-    @Binding var isShowingPremium: Bool
+    @Binding var isHiddenBanner: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -42,7 +42,7 @@ struct MyFilesView: View {
                 case .photosCollage(let collage):
                     PhotosCollageView(collage: collage, isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isHiddenBanner: $isHiddenBanner)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -61,6 +61,7 @@ struct MyFilesView: View {
             },
             rightButtonAction: {
                 if PremiumManager.shared.hasUsed(feature: PremiumFeature.createCollage) && !PremiumManager.shared.isPremium {
+                    AdManager.shared.showInterstitialAd()
                     isHideTabBackPremium = false
                     isTabBarHidden = true
                     navigationPath.append(MyFilesRoute.premium)
@@ -121,6 +122,7 @@ struct MyFilesView: View {
                             .tint(.blue)
                         }
                         .onTapGesture {
+                            AdManager.shared.showInterstitialAd()
                             isTabBarHidden = true
                             navigationPath.append(MyFilesRoute.photosCollage(collage))
                         }

@@ -14,18 +14,18 @@ enum CustomTab {
 struct TabBarView: View {
     @State private var selectedTab: CustomTab = .home
     @State private var isTabBarHidden: Bool = false
-    @State private var isShowingPremium: Bool = false
+    @State private var isHiddenBanner: Bool = false
     
     var body: some View {
         VStack {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView(isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
+                    HomeView(isTabBarHidden: $isTabBarHidden, isHiddenBanner: $isHiddenBanner)
                 case .myFiles:
-                    MyFilesView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
+                    MyFilesView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isHiddenBanner: $isHiddenBanner)
                 case .lock:
-                    LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isShowingPremium: $isShowingPremium)
+                    LockScreenView(selectedTab: $selectedTab, isTabBarHidden: $isTabBarHidden, isHiddenBanner: $isHiddenBanner)
                 }
             }
             .background(Color(.white).ignoresSafeArea())
@@ -47,7 +47,7 @@ struct TabBarView: View {
                             .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
                     )
                 }
-                if !isShowingPremium && !PremiumManager.shared.isPremium {
+                if !isHiddenBanner && !PremiumManager.shared.isPremium {
                     BannerAdView()
                         .frame(height: 50)
                         .frame(maxWidth: .infinity)

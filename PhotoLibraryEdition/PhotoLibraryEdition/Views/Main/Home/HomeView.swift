@@ -29,7 +29,7 @@ struct HomeView: View {
     ]
     @State private var navigationPath = NavigationPath()
     @Binding var isTabBarHidden: Bool
-    @Binding var isShowingPremium: Bool
+    @Binding var isHiddenBanner: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -60,7 +60,7 @@ struct HomeView: View {
                     SettingsView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isHiddenBanner: $isHiddenBanner)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -75,6 +75,7 @@ struct HomeView: View {
                 Spacer()
                 HStack {
                     Button {
+                        AdManager.shared.showInterstitialAd()
                         isTabBarHidden = true
                         navigationPath.append(HomeDestination.settings)
                     } label: {
@@ -89,10 +90,10 @@ struct HomeView: View {
                         .foregroundStyle(Color.white)
                     Spacer()
                     Button(action: {
-                        PremiumManager.shared.isPremium.toggle()
-//                        isHideTabBackPremium = false
-//                        isTabBarHidden = true
-//                        navigationPath.append(HomeDestination.premium)
+                        AdManager.shared.showInterstitialAd()
+                        isHideTabBackPremium = false
+                        isTabBarHidden = true
+                        navigationPath.append(HomeDestination.premium)
                     }) {
                         Image("ic_pro")
                             .foregroundColor(.white)
@@ -195,6 +196,7 @@ struct HomeView: View {
         HStack {
             Button {
                 isTabBarHidden = true
+                AdManager.shared.showInterstitialAd()
                 
                 if let feature = premiumFeature(for: destination) {
                     if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) && !PremiumManager.shared.isPremium {

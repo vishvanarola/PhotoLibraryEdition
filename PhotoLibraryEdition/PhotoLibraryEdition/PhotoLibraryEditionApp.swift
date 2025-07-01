@@ -23,6 +23,7 @@ struct PhotoLibraryEditionApp: App {
         
         FirebaseApp.configure()
         AdServices().fetchNewRemoteAdsData { response in
+            interstitialIntergap = response.intergap ?? 3
             if let appOpenAdUnitID = response.appOpen {
                 AdManager.shared.appOpenAdUnitID = appOpenAdUnitID
                 if !PremiumManager.shared.isPremium {
@@ -32,6 +33,11 @@ struct PhotoLibraryEditionApp: App {
             
             if let bannerAdUnitID = response.banner {
                 AdManager.shared.bannerAdUnitID = bannerAdUnitID
+            }
+            
+            if let interstitialAdUnitID = response.interstitial {
+                AdManager.shared.interstitialAdUnitID = interstitialAdUnitID
+                AdManager.shared.loadInterstitialAd()
             }
             
         } failure: { error in
@@ -79,10 +85,10 @@ struct PhotoLibraryEditionApp: App {
     }
     
     func showAppOpenAd() {
-        AdManager.shared.showAppOpenAdIfAvailable(from: UIApplication.shared.rootVC)
+        AdManager.shared.showAppOpenAdIfAvailable()
     }
     
     func showBannerAd() {
-        AdManager.shared.loadBannerAd(rootViewController: UIApplication.shared.rootVC)
+        AdManager.shared.loadBannerAd()
     }
 }

@@ -26,7 +26,7 @@ struct LockScreenView: View {
     @State private var isPasswordAlreadySet: Bool = false
     @State private var showWrongPasswordAlert: Bool = false
     @State private var navigationPath = NavigationPath()
-    @Binding var isShowingPremium: Bool
+    @Binding var isHiddenBanner: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -70,7 +70,7 @@ struct LockScreenView: View {
                     HidePhotoView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                         .navigationBarBackButtonHidden(true)
                 case .premium:
-                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isShowingPremium: $isShowingPremium)
+                    PremiumView(isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath, isHiddenBanner: $isHiddenBanner)
                         .navigationBarBackButtonHidden(true)
                 }
             }
@@ -168,6 +168,7 @@ struct LockScreenView: View {
     
     var forgotPassButton: some View {
         Button {
+            AdManager.shared.showInterstitialAd()
             isTabBarHidden = true
             navigationPath.append(LockRoute.forgotPassword)
         } label: {
@@ -210,6 +211,7 @@ struct LockScreenView: View {
             if entered == UserDefaults.standard.string(forKey: "userPassword") {
                 print("✅ Password matched. Proceed to HidePhotoView")
                 resetPasswordFields()
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = true
                 if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
                     isHideTabBackPremium = false
@@ -233,6 +235,7 @@ struct LockScreenView: View {
                     UserDefaults.standard.set(password, forKey: "userPassword")
                     headingTitle = "Password set successfully"
                     resetPasswordFields()
+                    AdManager.shared.showInterstitialAd()
                     isTabBarHidden = true
                     if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
                         isHideTabBackPremium = false

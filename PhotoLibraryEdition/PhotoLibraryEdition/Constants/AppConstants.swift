@@ -9,6 +9,7 @@ import SwiftUI
 
 let appName = "FrameFox Tools"
 let remoteConfigAdFetchKey = "VideoTools"
+var interstitialIntergap: Int = 3
 
 var isHideTabBackPremium: Bool = true
 

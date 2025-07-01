@@ -19,7 +19,7 @@ struct PremiumView: View {
     @State private var selectedPlanIndex = 2
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
-    @Binding var isShowingPremium: Bool
+    @Binding var isHiddenBanner: Bool
     
     let plans: [PlanOption] = [
         PlanOption(title: "₹ 399/ Weekly", subtitle: "₹ 399/week", price: "₹ 399", isHighlighted: false),
@@ -51,10 +51,10 @@ struct PremiumView: View {
             .padding(.horizontal, 20)
         }
         .onAppear {
-            isShowingPremium = true
+            isHiddenBanner = true
         }
         .onDisappear {
-            isShowingPremium = false
+            isHiddenBanner = false
         }
     }
     

@@ -69,6 +69,7 @@ struct PhotosCollageView: View {
             },
             rightButtonAction: {
                 if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInCollage) && !PremiumManager.shared.isPremium {
+                    AdManager.shared.showInterstitialAd()
                     isHideTabBackPremium = true
                     navigationPath.append(MyFilesRoute.premium)
                 } else {
