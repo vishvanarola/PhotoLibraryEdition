@@ -8,6 +8,7 @@
 import SwiftUI
 
 let appName = "App Name"
+let remoteConfigAdFetchKey = "VideoTools"
 
 var isHideTabBackPremium: Bool = true
 

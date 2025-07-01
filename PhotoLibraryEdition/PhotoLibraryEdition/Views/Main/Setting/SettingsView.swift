@@ -59,6 +59,7 @@ struct SettingsView: View {
                             .font(FontConstants.SyneFonts.regular(size: 18))
                             .foregroundStyle(Color.black.opacity(0.7))
                     }
+                    .multilineTextAlignment(.leading)
                     .padding(.horizontal, 25)
                     .padding(.vertical, 20)
                     Spacer()

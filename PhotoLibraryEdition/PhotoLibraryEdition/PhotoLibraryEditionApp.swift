@@ -8,14 +8,31 @@
 import SwiftUI
 import SwiftData
 import IQKeyboardManagerSwift
+import Firebase
+import GoogleMobileAds
 
 @main
 struct PhotoLibraryEditionApp: App {
+    @Environment(\.scenePhase) var scenePhase
+    @StateObject var adManager = AdManager.shared
     
     init() {
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
         IQKeyboardManager.shared.keyboardDistance = 10
+        
+        FirebaseApp.configure()
+        AdServices().fetchNewRemoteAdsData { response in
+            if let appOpenAdUnitID = response.appOpen {
+                AdManager.shared.appOpenAdUnitID = appOpenAdUnitID
+                if !PremiumManager.shared.isPremium {
+                    AdManager.shared.loadAppOpenAd(true)
+                }
+            }
+            
+        } failure: { error in
+            print("error remote config fetch: \(error)")
+        }
     }
     
     var sharedModelContainer: ModelContainer = {
@@ -35,7 +52,33 @@ struct PhotoLibraryEditionApp: App {
     var body: some Scene {
         WindowGroup {
             SplashView()
+                .onAppear {
+                    if !PremiumManager.shared.isPremium {
+                        showAppOpenAd()
+                    }
+                }
+                .onReceive(adManager.$isAppOpenAdReady) { isReady in
+                    if isReady && !PremiumManager.shared.isPremium {
+                        showAppOpenAd()
+                    }
+                }
+                .onChange(of: scenePhase) { oldValue, newValue in
+                    if newValue == .active && !PremiumManager.shared.isPremium {
+                        showAppOpenAd()
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    func showAppOpenAd() {
+        guard let rootVC = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first?.windows
+            .first?.rootViewController else {
+            return
+        }
+        
+        AdManager.shared.showAppOpenAdIfAvailable(from: rootVC)
     }
 }
