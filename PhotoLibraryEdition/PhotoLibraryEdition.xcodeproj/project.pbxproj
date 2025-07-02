@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF3F42E152E4600C66677 /* RevenueCat */; };
 		184073942E13DFDD007EA578 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 184073932E13DFDD007EA578 /* FirebaseCrashlytics */; };
 		184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 184073952E13DFDD007EA578 /* FirebaseRemoteConfig */; };
 		1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 1840739A2E13E71C007EA578 /* GoogleMobileAds */; };
@@ -45,6 +46,7 @@
 			files = (
 				1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */,
 				184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */,
+				180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */,
 				18F9343E2E06DE9600FC5268 /* IQKeyboardManagerSwift in Frameworks */,
 				184073942E13DFDD007EA578 /* FirebaseCrashlytics in Frameworks */,
 			);
@@ -93,6 +95,7 @@
 				184073932E13DFDD007EA578 /* FirebaseCrashlytics */,
 				184073952E13DFDD007EA578 /* FirebaseRemoteConfig */,
 				1840739A2E13E71C007EA578 /* GoogleMobileAds */,
+				180FF3F42E152E4600C66677 /* RevenueCat */,
 			);
 			productName = PhotoLibraryEdition;
 			productReference = 18F933022E03E58900FC5268 /* PhotoLibraryEdition.app */;
@@ -126,6 +129,7 @@
 				18F9343C2E06DE9600FC5268 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				184073992E13E71C007EA578 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				180FF3F32E152E4600C66677 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 18F933032E03E58900FC5268 /* Products */;
@@ -377,6 +381,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		180FF3F32E152E4600C66677 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.30.0;
+			};
+		};
 		184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -404,6 +416,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		180FF3F42E152E4600C66677 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180FF3F32E152E4600C66677 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
 		184073932E13DFDD007EA578 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -48,7 +48,6 @@ struct SettingsView: View {
     
     var premiumView: some View {
         Button {
-            AdManager.shared.showInterstitialAd()
             isHideTabBackPremium = true
             navigationPath.append(HomeDestination.premium)
         } label: {

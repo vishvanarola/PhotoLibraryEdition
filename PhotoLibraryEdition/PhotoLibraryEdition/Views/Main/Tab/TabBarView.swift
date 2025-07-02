@@ -30,7 +30,6 @@ struct TabBarView: View {
                 }
             }
             .background(Color(.white).ignoresSafeArea())
-            Spacer()
             VStack(spacing: 0) {
                 if !isTabBarHidden {
                     HStack {

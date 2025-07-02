@@ -39,6 +39,8 @@ struct LockScreenView: View {
                     if let saved = UserDefaults.standard.string(forKey: "userPassword"), saved.isEmpty == false {
                         forgotPassButton
                     }
+                    Color.clear
+                        .frame(height: 1)
                 }
                 .padding(.horizontal, 20)
             }

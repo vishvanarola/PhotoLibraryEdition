@@ -23,6 +23,9 @@ struct PhotoLibraryEditionApp: App {
         IQKeyboardManager.shared.keyboardDistance = 10
         
         FirebaseApp.configure()
+        
+        PremiumManager.shared.configureRevenueCat()
+        
         AdServices().fetchNewRemoteAdsData { response in
             interstitialIntergap = response.intergap ?? 3
             if let appOpenAdUnitID = response.appOpen {

@@ -6,43 +6,49 @@
 //
 
 import SwiftUI
-
-struct PlanOption: Identifiable {
-    let id = UUID()
-    let title: String
-    let subtitle: String
-    let price: String
-    let isHighlighted: Bool
-}
+import RevenueCat
 
 struct PremiumView: View {
-    @State private var selectedPlanIndex = 2
+    @ObservedObject private var premiumManager = PremiumManager.shared
+    @Environment(\.openURL) var openURL
+    @State private var selectedPlanIndex = 0
+    @State private var showPurchaseError = false
+    @State private var purchaseErrorMessage = ""
+    @State private var isPurchasing = false
+    @State private var isRestoring = false
+    @State private var showSuccess = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     @Binding var isHiddenBanner: Bool
-    @Environment(\.openURL) var openURL
-    
-    let plans: [PlanOption] = [
-        PlanOption(title: "₹ 399/ Weekly", subtitle: "₹ 399/week", price: "₹ 399", isHighlighted: false),
-        PlanOption(title: "₹ 999/ Monthly", subtitle: "₹ 249/week", price: "₹ 999", isHighlighted: false),
-        PlanOption(title: "₹ 5999/ Lifetime", subtitle: "Best valid Plan", price: "₹ 5999", isHighlighted: true)
-    ]
     
     var body: some View {
         ZStack {
             backgroundView.ignoresSafeArea()
+            
             VStack(spacing: 0) {
                 restoreView
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 30) {
-                        headerView
-                        featuresView
-                        subscriptionPlansView
-                        Color.clear
-                            .frame(height: 1)
+                
+                ScrollViewReader { proxy in
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 30) {
+                            headerView
+                            featuresView
+                            subscriptionPlansView
+                            Color.clear
+                                .frame(height: 1)
+                                .id("BOTTOM")
+                        }
+                        .padding(.top, 10)
                     }
-                    .padding(.top, 10)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+                            withAnimation(.easeOut(duration: 2)) {
+                                proxy.scrollTo("BOTTOM", anchor: .bottom)
+                            }
+                        }
+                    }
                 }
+                
                 VStack(spacing: 16) {
                     getFullAccessButton
                     footerView
@@ -50,12 +56,33 @@ struct PremiumView: View {
                 .padding(.bottom)
             }
             .padding(.horizontal, 20)
+            
+            if premiumManager.isLoadingProducts || isPurchasing || isRestoring {
+                Color.black.opacity(0.3).ignoresSafeArea()
+                ProgressView("Loading...")
+                    .progressViewStyle(CircularProgressViewStyle())
+            }
         }
         .onAppear {
             isHiddenBanner = true
+            premiumManager.configureRevenueCat()
         }
         .onDisappear {
             isHiddenBanner = false
+        }
+        .alert(isPresented: $showPurchaseError) {
+            Alert(
+                title: Text("Error"),
+                message: Text(purchaseErrorMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .alert(isPresented: $showSuccess) {
+            Alert(
+                title: Text("Success"),
+                message: Text("Purchase successful!"),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
     
@@ -74,7 +101,16 @@ struct PremiumView: View {
     var restoreView: some View {
         HStack {
             Button {
-                
+                isRestoring = true
+                premiumManager.restorePurchases { success, error in
+                    isRestoring = false
+                    if success {
+                        showSuccess = true
+                    } else {
+                        purchaseErrorMessage = error ?? "Restore failed."
+                        showPurchaseError = true
+                    }
+                }
             } label: {
                 Text("Restore")
                     .font(FontConstants.SyneFonts.medium(size: 20))
@@ -103,8 +139,10 @@ struct PremiumView: View {
                                    startPoint: .topLeading,
                                    endPoint: .bottomTrailing)
                 )
-                .mask(Text("Unlock Premium")
-                    .font(FontConstants.SyneFonts.semiBold(size: 35)))
+                .mask(
+                    Text("Unlock Premium")
+                        .font(FontConstants.SyneFonts.semiBold(size: 35))
+                )
             
             Text("access now")
                 .font(FontConstants.SyneFonts.semiBold(size: 25))
@@ -132,43 +170,14 @@ struct PremiumView: View {
     
     var subscriptionPlansView: some View {
         VStack(spacing: 10) {
-            ForEach(Array(plans.enumerated()), id: \.1.id) { index, plan in
-                Button(action: {
+            ForEach(Array(premiumManager.products.enumerated()), id: \.element.productIdentifier) { index, product in
+                Button {
                     selectedPlanIndex = index
-                }) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(plan.title)
-                                .font(FontConstants.MontserratFonts.semiBold(size: 18))
-                                .foregroundStyle(selectedPlanIndex == index ? .white : .black)
-                            Text(plan.subtitle)
-                                .font(selectedPlanIndex == index ?
-                                      FontConstants.MontserratFonts.semiBold(size: 17) :
-                                        FontConstants.MontserratFonts.medium(size: 17))
-                                .foregroundStyle(selectedPlanIndex == index ?
-                                    .white.opacity(0.7) :
-                                                    textGrayColor.opacity(0.7))
-                        }
-                        Spacer()
-                        Image("ic_circle_fill")
-                    }
-                    .padding()
-                    .background(
-                        selectedPlanIndex == index ?
-                        AnyView(
-                            LinearGradient(
-                                gradient: Gradient(colors: [redThemeColor, pinkGradientColor]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        ) :
-                            AnyView(Color.white)
+                } label: {
+                    SubscriptionPlanCell(
+                        product: product,
+                        isSelected: selectedPlanIndex == index
                     )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(textGrayColor.opacity(0.5), lineWidth: 1)
-                    )
-                    .cornerRadius(15)
                 }
             }
         }
@@ -176,7 +185,19 @@ struct PremiumView: View {
     
     var getFullAccessButton: some View {
         Button {
+            guard premiumManager.products.indices.contains(selectedPlanIndex) else { return }
+            let product = premiumManager.products[selectedPlanIndex]
             
+            isPurchasing = true
+            premiumManager.purchase(product: product) { success, error in
+                isPurchasing = false
+                if success {
+                    showSuccess = true
+                } else {
+                    purchaseErrorMessage = error ?? "Purchase failed."
+                    showPurchaseError = true
+                }
+            }
         } label: {
             Text("Get Full Access")
                 .font(FontConstants.MontserratFonts.bold(size: 17))
@@ -192,6 +213,7 @@ struct PremiumView: View {
                 )
                 .cornerRadius(20)
         }
+        .disabled(isPurchasing || premiumManager.isLoadingProducts)
     }
     
     var footerView: some View {
@@ -214,7 +236,46 @@ struct PremiumView: View {
                 }
             } label: { Text("▪︎  EULA") }
         }
-        .font(FontConstants.SyneFonts.regular(size: 14))
+        .font(FontConstants.SyneFonts.light(size: 14))
         .foregroundStyle(.black)
+    }
+}
+
+struct SubscriptionPlanCell: View {
+    let product: StoreProduct
+    let isSelected: Bool
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("\(product.localizedPriceString)/ \(product.sk2Product?.description ?? "")")
+                    .font(FontConstants.MontserratFonts.semiBold(size: 18))
+                    .foregroundStyle(isSelected ? .white : .black)
+                Text(product.localizedTitle)
+                    .font(isSelected ?
+                          FontConstants.MontserratFonts.semiBold(size: 17) :
+                            FontConstants.MontserratFonts.medium(size: 17))
+                    .foregroundStyle(isSelected ? .white.opacity(0.7) : textGrayColor.opacity(0.7))
+            }
+            Spacer()
+            Image("ic_circle_fill")
+        }
+        .padding()
+        .background(
+            isSelected ?
+            AnyView(
+                LinearGradient(
+                    gradient: Gradient(colors: [redThemeColor, pinkGradientColor]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            ) :
+                AnyView(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(textGrayColor.opacity(0.5), lineWidth: 1)
+        )
+        .cornerRadius(15)
     }
 }

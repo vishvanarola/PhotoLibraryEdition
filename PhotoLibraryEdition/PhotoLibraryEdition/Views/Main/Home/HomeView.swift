@@ -90,7 +90,6 @@ struct HomeView: View {
                         .foregroundStyle(Color.white)
                     Spacer()
                     Button(action: {
-                        AdManager.shared.showInterstitialAd()
                         isHideTabBackPremium = false
                         isTabBarHidden = true
                         navigationPath.append(HomeDestination.premium)
@@ -196,16 +195,17 @@ struct HomeView: View {
         HStack {
             Button {
                 isTabBarHidden = true
-                AdManager.shared.showInterstitialAd()
                 
                 if let feature = premiumFeature(for: destination) {
                     if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) && !PremiumManager.shared.isPremium {
+                        AdManager.shared.showInterstitialAd()
                         navigationPath.append(destination)
                     } else {
                         isHideTabBackPremium = false
                         navigationPath.append(HomeDestination.premium)
                     }
                 } else {
+                    AdManager.shared.showInterstitialAd()
                     navigationPath.append(destination)
                 }
             } label: {
