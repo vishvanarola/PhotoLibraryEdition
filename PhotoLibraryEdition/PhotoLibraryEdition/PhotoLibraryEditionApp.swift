@@ -9,7 +9,8 @@ import SwiftUI
 import SwiftData
 import IQKeyboardManagerSwift
 import Firebase
-import GoogleMobileAds
+import AppTrackingTransparency
+import AdSupport
 
 @main
 struct PhotoLibraryEditionApp: App {
@@ -63,6 +64,9 @@ struct PhotoLibraryEditionApp: App {
         WindowGroup {
             SplashView()
                 .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now()+1) {
+                        requestPermission()
+                    }
                     if !PremiumManager.shared.isPremium {
                         showAppOpenAd()
                         showBannerAd()
@@ -90,5 +94,25 @@ struct PhotoLibraryEditionApp: App {
     
     func showBannerAd() {
         AdManager.shared.loadBannerAd()
+    }
+    
+    func requestPermission() {
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    print("Authorized")
+                    print(ASIdentifierManager.shared().advertisingIdentifier)
+                case .denied:
+                    print("Denied")
+                case .notDetermined:
+                    print("Not Determined")
+                case .restricted:
+                    print("Restricted")
+                @unknown default:
+                    print("Unknown")
+                }
+            }
+        }
     }
 }

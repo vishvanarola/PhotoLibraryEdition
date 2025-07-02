@@ -15,6 +15,7 @@ struct TabBarView: View {
     @State private var selectedTab: CustomTab = .home
     @State private var isTabBarHidden: Bool = false
     @State private var isHiddenBanner: Bool = false
+    @ObservedObject var adManager = AdManager.shared
     
     var body: some View {
         VStack {
@@ -47,7 +48,7 @@ struct TabBarView: View {
                             .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 1)
                     )
                 }
-                if !isHiddenBanner && !PremiumManager.shared.isPremium {
+                if !isHiddenBanner && !PremiumManager.shared.isPremium && adManager.isBannerAdLoaded {
                     BannerAdView()
                         .frame(height: 50)
                         .frame(maxWidth: .infinity)

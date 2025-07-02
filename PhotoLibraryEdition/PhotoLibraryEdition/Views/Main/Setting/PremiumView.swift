@@ -20,6 +20,7 @@ struct PremiumView: View {
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     @Binding var isHiddenBanner: Bool
+    @Environment(\.openURL) var openURL
     
     let plans: [PlanOption] = [
         PlanOption(title: "₹ 399/ Weekly", subtitle: "₹ 399/week", price: "₹ 399", isHighlighted: false),
@@ -195,11 +196,23 @@ struct PremiumView: View {
     
     var footerView: some View {
         HStack(spacing: 0) {
-            Button { } label: { Text("▪︎  Privacy & Policy") }
+            Button {
+                if let url = privacyPolicy {
+                    openURL(url)
+                }
+            } label: { Text("▪︎  Privacy & Policy") }
             Spacer()
-            Button { } label: { Text("▪︎  Terms & Condition") }
+            Button {
+                if let url = termsCondition {
+                    openURL(url)
+                }
+            } label: { Text("▪︎  Terms & Condition") }
             Spacer()
-            Button { } label: { Text("▪︎  EULA") }
+            Button {
+                if let url = EULA {
+                    openURL(url)
+                }
+            } label: { Text("▪︎  EULA") }
         }
         .font(FontConstants.SyneFonts.regular(size: 14))
         .foregroundStyle(.black)

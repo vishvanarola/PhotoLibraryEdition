@@ -10,15 +10,15 @@ import GoogleMobileAds
 class AdManager: NSObject, ObservableObject {
     static let shared = AdManager()
     
-    @Published var isAppOpenAdReady = false
-    
     // MARK: App Open Ad Properties
     var appOpenAd: AppOpenAd?
     var appOpenAdUnitID: String = ""
+    @Published var isAppOpenAdReady = false
     
     // MARK: Banner Ad Properties
     var bannerView: BannerView?
     var bannerAdUnitID: String = ""
+    @Published var isBannerAdLoaded: Bool = false
     
     // MARK: Interstitial Ad Properties
     var interstitialAd: InterstitialAd?
@@ -54,12 +54,12 @@ class AdManager: NSObject, ObservableObject {
             loadAppOpenAd(false)
         } else {
             print("App Open Ad not ready. Triggering load.")
-            loadAppOpenAd(true)
+            loadAppOpenAd(false)
         }
     }
     
     // MARK: Banner Ad Methods
-    func loadBannerAd( adSize: AdSize = AdSizeBanner) {
+    func loadBannerAd(adSize: AdSize = AdSizeBanner) {
         guard !bannerAdUnitID.isEmpty else {
             print("Banner Ad unit ID is empty.")
             return
@@ -69,6 +69,7 @@ class AdManager: NSObject, ObservableObject {
         bannerView?.rootViewController = UIApplication.shared.rootVC
         bannerView?.load(Request())
         print("Banner Ad loading...")
+        bannerView?.delegate = self
     }
     
     // MARK: Interstitial Ad Methods
@@ -133,5 +134,17 @@ extension AdManager: FullScreenContentDelegate {
             print("interstitial ad is nil and load again")
             loadInterstitialAd()
         }
+    }
+}
+
+// MARK: - BannerViewDelegate
+extension AdManager: BannerViewDelegate {
+    func bannerViewDidReceiveAd(_ bannerView: BannerView) {
+        print("Banner Ad loaded successfully.")
+        isBannerAdLoaded = true
+    }
+    func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
+        print("Banner Ad failed to load: \(error.localizedDescription)")
+        isBannerAdLoaded = false
     }
 }

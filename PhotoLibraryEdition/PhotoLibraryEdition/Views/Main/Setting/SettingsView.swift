@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Binding var isTabBarHidden: Bool
     @State private var isShowingShareSheet = false
     @Binding var navigationPath: NavigationPath
+    @Environment(\.openURL) var openURL
     
     var body: some View {
         ZStack {
@@ -25,7 +26,9 @@ struct SettingsView: View {
         }
         .ignoresSafeArea()
         .sheet(isPresented: $isShowingShareSheet) {
-            ActivityView(activityItems: ["Check out this awesome app!"])
+            if let appUrl = appLink {
+                ActivityView(activityItems: [appUrl])
+            }
         }
     }
     
@@ -90,13 +93,19 @@ struct SettingsView: View {
                 .foregroundStyle(Color.black)
             VStack(spacing: 20) {
                 options(image: "ic_star", text: "Rate Us") {
-                    rateApp()
+                    if let url = appRateLink {
+                        openURL(url)
+                    }
                 }
                 options(image: "ic_secure", text: "Privacy & Policy") {
-                    openURL("https://yourapp.com/privacy")
+                    if let url = privacyPolicy {
+                        openURL(url)
+                    }
                 }
                 options(image: "ic_terms", text: "Terms & Condition") {
-                    openURL("https://yourapp.com/terms")
+                    if let url = termsCondition {
+                        openURL(url)
+                    }
                 }
             }
             .padding(.vertical, 25)
@@ -128,17 +137,5 @@ struct SettingsView: View {
             }
             .padding(.leading, 28)
         }
-    }
-    
-    // MARK: - Actions
-    func openURL(_ urlString: String) {
-        if let url = URL(string: urlString) {
-            UIApplication.shared.open(url)
-        }
-    }
-    
-    func rateApp() {
-        guard let writeReviewURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID?action=write-review") else { return }
-        UIApplication.shared.open(writeReviewURL)
     }
 }
