@@ -9,8 +9,6 @@ import SwiftUI
 import SwiftData
 import IQKeyboardManagerSwift
 import Firebase
-import AppTrackingTransparency
-import AdSupport
 
 @main
 struct PhotoLibraryEditionApp: App {
@@ -27,6 +25,7 @@ struct PhotoLibraryEditionApp: App {
         PremiumManager.shared.configureRevenueCat()
         
         AdServices().fetchNewRemoteAdsData { response in
+            AdManager.shared.configureAds(response.canShowUMP ?? false)
             interstitialIntergap = response.intergap ?? 3
             if let appOpenAdUnitID = response.appOpen {
                 AdManager.shared.appOpenAdUnitID = appOpenAdUnitID
@@ -67,9 +66,9 @@ struct PhotoLibraryEditionApp: App {
         WindowGroup {
             SplashView()
                 .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now()+1) {
-                        requestPermission()
-                    }
+//                    DispatchQueue.main.asyncAfter(deadline: .now()+1) {
+//                        AdManager.shared.configureAds(canShowUMP)
+//                    }
                     if !PremiumManager.shared.isPremium {
                         showAppOpenAd()
                         showBannerAd()
@@ -97,25 +96,5 @@ struct PhotoLibraryEditionApp: App {
     
     func showBannerAd() {
         AdManager.shared.loadBannerAd()
-    }
-    
-    func requestPermission() {
-        if #available(iOS 14, *) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                switch status {
-                case .authorized:
-                    print("Authorized")
-                    print(ASIdentifierManager.shared().advertisingIdentifier)
-                case .denied:
-                    print("Denied")
-                case .notDetermined:
-                    print("Not Determined")
-                case .restricted:
-                    print("Restricted")
-                @unknown default:
-                    print("Unknown")
-                }
-            }
-        }
     }
 }

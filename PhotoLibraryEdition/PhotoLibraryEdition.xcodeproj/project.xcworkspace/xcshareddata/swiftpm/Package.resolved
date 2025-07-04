@@ -1,5 +1,5 @@
 {
-  "originHash" : "fc69cb56f24d61653c710e94613b00041bc54feaad145dc9cf64da73dfbd5751",
+  "originHash" : "9726e5c72403a9d199438ff3257d642c9c9a4808cf82bf2a3afee4ecebab5308",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -224,6 +224,15 @@
       "state" : {
         "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
         "version" : "1.30.0"
+      }
+    },
+    {
+      "identity" : "swifty-ads",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/crashoverride777/swifty-ads.git",
+      "state" : {
+        "revision" : "dd152f959d3e0fd3be11b34822a80be026303d68",
+        "version" : "20.2.0"
       }
     }
   ],

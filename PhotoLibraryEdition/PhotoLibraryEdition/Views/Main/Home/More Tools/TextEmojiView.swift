@@ -13,7 +13,7 @@ struct TextEmojiView: View {
     @State private var outputText: String = ""
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
-     
+    
     var body: some View {
         VStack {
             headerView

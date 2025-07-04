@@ -6,6 +6,10 @@
 //
 
 import GoogleMobileAds
+import AppTrackingTransparency
+import UserMessagingPlatform
+import AdSupport
+import SwiftyAds
 
 class AdManager: NSObject, ObservableObject {
     static let shared = AdManager()
@@ -105,6 +109,68 @@ class AdManager: NSObject, ObservableObject {
             }
         } else {
             interstitialIntergap = interstitialIntergap <= 0 ? 3 : interstitialIntergap-1
+        }
+    }
+    
+    func configureAds(_ canShowUMP: Bool) {
+        if canShowUMP {
+            requestConsentIfNeeded()
+        } else {
+            requestTrackingPermission()
+        }
+    }
+    
+    func requestTrackingPermission() {
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    print("Authorized")
+                    print(ASIdentifierManager.shared().advertisingIdentifier)
+                case .denied:
+                    print("Denied")
+                case .notDetermined:
+                    print("Not Determined")
+                case .restricted:
+                    print("Restricted")
+                @unknown default:
+                    print("Unknown")
+                }
+            }
+        }
+    }
+    
+    private func requestConsentIfNeeded() {
+        let parameters = RequestParameters()
+        parameters.isTaggedForUnderAgeOfConsent = false
+        
+        ConsentInformation.shared.requestConsentInfoUpdate(with: parameters) { error in
+            if let error = error {
+                print("Consent Request Error: \(error.localizedDescription)")
+                return
+            }
+            
+            switch ConsentInformation.shared.formStatus {
+            case .available:
+                ConsentForm.load { form, loadError in
+                    if let loadError = loadError {
+                        print("Consent Form Load Error: \(loadError.localizedDescription)")
+                        return
+                    }
+                    
+                    form?.present(from: UIApplication.shared.rootVC) { dismissError in
+                        if let dismissError = dismissError {
+                            print("Consent Form Dismiss Error: \(dismissError.localizedDescription)")
+                        }
+                    }
+                }
+            case .unavailable:
+                print("case not available")
+            case .unknown:
+                print("case unknown")
+            @unknown default:
+                break
+            }
         }
     }
 }
