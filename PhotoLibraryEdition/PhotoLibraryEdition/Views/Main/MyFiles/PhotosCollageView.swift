@@ -16,30 +16,17 @@ struct PhotosCollageView: View {
     @State private var selectedItems: [PhotosPickerItem] = []
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
+    @State private var selectedImageData: Data?
+    @State private var isShowingPhotoPreview = false
     
     var body: some View {
-        VStack {
-            headerView
-            if collage.images.isEmpty {
-                Spacer()
-                Text("No photos added yet")
-                    .font(FontConstants.MontserratFonts.medium(size: 17))
-                Spacer()
+        Group {
+            if isShowingPhotoPreview {
+                fullPhotoView()
             } else {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
-                        ForEach(collage.images, id: \.id) { collageImage in
-                            if let uiImage = UIImage(data: collageImage.data) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 100)
-                                    .clipped()
-                                    .cornerRadius(8)
-                            }
-                        }
-                    }
-                    .padding()
+                VStack {
+                    headerView
+                    collagePhohotView
                 }
             }
         }
@@ -64,11 +51,12 @@ struct PhotosCollageView: View {
             rightButtonImageName: "ic_plus",
             headerTitle: collage.name,
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
             rightButtonAction: {
-                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInCollage) && !PremiumManager.shared.isPremium {
+                if PremiumManager.shared.hasUsed() && !PremiumManager.shared.isPremium {
                     AdManager.shared.showInterstitialAd()
                     isHideTabBackPremium = true
                     navigationPath.append(MyFilesRoute.premium)
@@ -77,6 +65,70 @@ struct PhotosCollageView: View {
                 }
             }
         )
+    }
+    
+    var collagePhohotView: some View {
+        Group {
+            if collage.images.isEmpty {
+                Spacer()
+                Text("No photos added yet")
+                    .font(FontConstants.MontserratFonts.medium(size: 17))
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
+                        ForEach(collage.images, id: \.id) { collageImage in
+                            if let uiImage = UIImage(data: collageImage.data) {
+                                Button {
+                                    AdManager.shared.showInterstitialAd()
+                                    selectedImageData = collageImage.data
+                                    withAnimation {
+                                        isShowingPhotoPreview = true
+                                    }
+                                } label: {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 100)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+    }
+    
+    func fullPhotoView() -> some View {
+        Group {
+            ZStack(alignment: .topTrailing) {
+                Color.black.ignoresSafeArea()
+                if let data = selectedImageData, let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black)
+                }
+                
+                Button {
+                    AdManager.shared.showInterstitialAd()
+                    withAnimation {
+                        isShowingPhotoPreview = false
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                }
+                .frame(width: 30, height: 30)
+                .padding()
+                .foregroundColor(.white)
+                .padding(.top, 20)
+            }
+        }
     }
     
     func handleImageSelection() async {
@@ -88,7 +140,7 @@ struct PhotosCollageView: View {
             }
         }
         do {
-            PremiumManager.shared.markUsed(feature: PremiumFeature.addPhotosInCollage)
+            PremiumManager.shared.markUsed()
             try modelContext.save()
         } catch {
             print("⚠️ Error saving images: \(error)")

@@ -85,6 +85,7 @@ struct LockScreenView: View {
             rightButtonImageName: nil,
             headerTitle: "Lock",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 withAnimation {
                     selectedTab = .home
                 }
@@ -150,6 +151,7 @@ struct LockScreenView: View {
             }
             HStack(spacing: 15) {
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     cancelTapped()
                 } label: {
                     Text("Cancel")
@@ -158,6 +160,7 @@ struct LockScreenView: View {
                 }
                 numberText(0) { numberTapped($0) }
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     doneTapped()
                 } label: {
                     Text("Done")
@@ -215,12 +218,7 @@ struct LockScreenView: View {
                 resetPasswordFields()
                 AdManager.shared.showInterstitialAd()
                 isTabBarHidden = true
-                if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
-                    isHideTabBackPremium = false
-                    navigationPath.append(LockRoute.premium)
-                } else {
-                    navigationPath.append(LockRoute.hidePhotos)
-                }
+                navigationPath.append(LockRoute.hidePhotos)
             } else {
                 showWrongPasswordAlert = true
                 resetPasswordFields()
@@ -239,12 +237,7 @@ struct LockScreenView: View {
                     resetPasswordFields()
                     AdManager.shared.showInterstitialAd()
                     isTabBarHidden = true
-                    if PremiumManager.shared.hasUsed(feature: PremiumFeature.addPhotosInHide) && !PremiumManager.shared.isPremium {
-                        isHideTabBackPremium = false
-                        navigationPath.append(LockRoute.premium)
-                    } else {
-                        navigationPath.append(LockRoute.hidePhotos)
-                    }
+                    navigationPath.append(LockRoute.hidePhotos)
                     print("✅ Password set successfully: \(password)")
                 } else {
                     showMismatchAlert = true

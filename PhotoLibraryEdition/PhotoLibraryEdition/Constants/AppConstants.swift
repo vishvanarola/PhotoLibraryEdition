@@ -11,6 +11,7 @@ let appName = "FrameFox Tools"
 let remoteConfigAdFetchKey = "VideoTools"
 var interstitialIntergap: Int = 3
 var isHideTabBackPremium: Bool = true
+var remoteConfigAdShowCount: Int = 3
 
 let redThemeColor = Color(red: 229/255, green: 32/255, blue: 32/255) //#E52020
 let pinkThemeColor = Color(red: 1.0, green: 101/255, blue: 101/255) //#FF6565

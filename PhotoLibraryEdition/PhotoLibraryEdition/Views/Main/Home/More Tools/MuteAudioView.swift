@@ -72,6 +72,7 @@ struct MuteAudioView: View {
             rightButtonImageName: isVideoPicked ? "ic_share" : "ic_plus",
             headerTitle: "Mute Audio",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -106,14 +107,15 @@ struct MuteAudioView: View {
                             player.pause()
                             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
                         }
-                    Button(action: {
+                    Button {
+                        AdManager.shared.showInterstitialAd()
                         if isPlaying {
                             player.pause()
                         } else {
                             player.play()
                         }
                         isPlaying.toggle()
-                    }) {
+                    } label: {
                         Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -132,8 +134,13 @@ struct MuteAudioView: View {
     
     var outputButton: some View {
         Button {
-            if let url = pickedVideoURL {
-                muteVideo(originalURL: url)
+            if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                AdManager.shared.showInterstitialAd()
+                if let url = pickedVideoURL {
+                    muteVideo(originalURL: url)
+                }
+            } else {
+                navigationPath.append(HomeDestination.premium)
             }
         } label: {
             Text("Mute Audio")
@@ -192,7 +199,7 @@ struct MuteAudioView: View {
                             self.isPlaying = false
                             configurePlayer(newPlayer)
                             self.showToast = true
-                            PremiumManager.shared.markUsed(feature: PremiumFeature.muteAudio)
+                            PremiumManager.shared.markUsed()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 self.showToast = false
                             }

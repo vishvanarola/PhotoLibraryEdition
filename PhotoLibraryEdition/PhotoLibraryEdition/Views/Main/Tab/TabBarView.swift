@@ -49,7 +49,7 @@ struct TabBarView: View {
                 }
                 if !isHiddenBanner && !PremiumManager.shared.isPremium && adManager.isBannerAdLoaded {
                     BannerAdView()
-                        .frame(height: 50)
+                        .frame(height: 70)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -72,6 +72,7 @@ struct TabBarView: View {
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
+            AdManager.shared.showInterstitialAd()
             withAnimation {
                 selectedTab = tab
             }

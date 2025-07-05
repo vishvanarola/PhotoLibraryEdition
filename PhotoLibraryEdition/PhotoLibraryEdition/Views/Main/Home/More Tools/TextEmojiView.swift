@@ -11,6 +11,8 @@ struct TextEmojiView: View {
     @State private var enterTextInput: String = ""
     @State private var emojiInput: String = ""
     @State private var outputText: String = ""
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -37,6 +39,7 @@ struct TextEmojiView: View {
             rightButtonImageName: nil,
             headerTitle: "Text to Emoji",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -70,7 +73,7 @@ struct TextEmojiView: View {
     
     var outputButton: some View {
         Button {
-            generateEmojiText()
+            validateAndGenerateEmojiText()
         } label: {
             Text("Generate Emoji")
                 .font(FontConstants.MontserratFonts.semiBold(size: 22))
@@ -82,15 +85,63 @@ struct TextEmojiView: View {
         }
         .padding(.bottom)
         .padding(.horizontal, 20)
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Invalid Input"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
+    }
+    
+    private func validateAndGenerateEmojiText() {
+        let trimmedText = enterTextInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmoji = emojiInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedText.isEmpty else {
+            alertMessage = "Please enter text to convert into emojis."
+            showAlert = true
+            return
+        }
+        
+        guard !trimmedEmoji.isEmpty else {
+            alertMessage = "Please enter at least one emoji."
+            showAlert = true
+            return
+        }
+        
+        // Optional: Validate if emoji input is emoji-like
+        let emojiRegex = #"^\p{Emoji}+$"#
+        if trimmedEmoji.range(of: emojiRegex, options: .regularExpression) == nil {
+            alertMessage = "Please enter a valid emoji character."
+            showAlert = true
+            return
+        }
+        
+        if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+            AdManager.shared.showInterstitialAd()
+            generateEmojiText()
+            PremiumManager.shared.markUsed()
+        } else {
+            navigationPath.append(HomeDestination.premium)
+        }
     }
     
     private func generateEmojiText() {
-        outputText = emojiPattern(for: enterTextInput, e: emojiInput)
+        let text = enterTextInput.uppercased()
+        let emoji = emojiInput
+        
+        var result = ""
+        
+        for character in text {
+            if character.isLetter {
+                result += emojiPattern(for: String(character), e: emoji)
+                result += "\n\n"
+            }
+        }
+        
+        outputText = result
     }
     
     func emojiPattern(for letter: String, e: String) -> String {
         guard !e.isEmpty else { return "" }
-        PremiumManager.shared.markUsed(feature: PremiumFeature.textToEmoji)
+        PremiumManager.shared.markUsed()
         
         switch letter.uppercased() {
         case "A":
@@ -104,25 +155,25 @@ struct TextEmojiView: View {
         case "B":
             return """
             \(e)\(e)
-            \(e)  \(e)
+            \(e)   \(e)
             \(e)\(e)
-            \(e)  \(e)
+            \(e)   \(e)
             \(e)\(e)
             """
         case "C":
             return """
-             \(e)\(e)\(e)
+              \(e)\(e)\(e)
             \(e)
             \(e)
             \(e)
-             \(e)\(e)\(e)
+              \(e)\(e)\(e)
             """
         case "D":
             return """
             \(e)\(e)
-            \(e)  \(e)
             \(e)   \(e)
-            \(e)  \(e)
+            \(e)    \(e)
+            \(e)   \(e)
             \(e)\(e)
             """
         case "E":
@@ -160,9 +211,9 @@ struct TextEmojiView: View {
         case "I":
             return """
             \(e)\(e)\(e)
-                \(e)
-                \(e)
-                \(e)
+                 \(e)
+                 \(e)
+                 \(e)
             \(e)\(e)\(e)
             """
         case "J":
@@ -175,11 +226,11 @@ struct TextEmojiView: View {
             """
         case "K":
             return """
-            \(e)  \(e)
+            \(e)   \(e)
             \(e) \(e)
             \(e)
             \(e) \(e)
-            \(e)  \(e)
+            \(e)   \(e)
             """
         case "L":
             return """
@@ -207,16 +258,16 @@ struct TextEmojiView: View {
             """
         case "O":
             return """
-             \(e)\(e)\(e)
-            \(e)       \(e)
-            \(e)       \(e)
-            \(e)       \(e)
-             \(e)\(e)\(e)
+              \(e)\(e)\(e)
+            \(e)         \(e)
+            \(e)         \(e)
+            \(e)         \(e)
+              \(e)\(e)\(e)
             """
         case "P":
             return """
             \(e)\(e)\(e)
-            \(e)    \(e)
+            \(e)      \(e)
             \(e)\(e)\(e)
             \(e)
             \(e)
@@ -233,7 +284,7 @@ struct TextEmojiView: View {
         case "R":
             return """
             \(e)\(e)\(e)
-            \(e)     \(e)
+            \(e)      \(e)
             \(e)\(e)\(e)
             \(e)   \(e)
             \(e)     \(e)
@@ -249,10 +300,10 @@ struct TextEmojiView: View {
         case "T":
             return """
             \(e)\(e)\(e)
-                \(e)
-                \(e)
-                \(e)
-                \(e)
+                 \(e)
+                 \(e)
+                 \(e)
+                 \(e)
             """
         case "U":
             return """
@@ -272,10 +323,10 @@ struct TextEmojiView: View {
             """
         case "W":
             return """
-            \(e)                 \(e)
-             \(e)               \(e)
-              \(e)    \(e)    \(e)
-               \(e)\(e) \(e)\(e)
+            \(e)                \(e)
+             \(e)              \(e)
+              \(e)    \(e)   \(e)
+               \(e)\(e)\(e)\(e)
                  \(e)     \(e)
             """
         case "X":

@@ -27,6 +27,7 @@ struct PhotoLibraryEditionApp: App {
         AdServices().fetchNewRemoteAdsData { response in
             AdManager.shared.configureAds(response.canShowUMP ?? false)
             interstitialIntergap = response.intergap ?? 3
+            remoteConfigAdShowCount = response.intergap ?? 3
             if let appOpenAdUnitID = response.appOpen {
                 AdManager.shared.appOpenAdUnitID = appOpenAdUnitID
                 if !PremiumManager.shared.isPremium {
@@ -66,9 +67,6 @@ struct PhotoLibraryEditionApp: App {
         WindowGroup {
             SplashView()
                 .onAppear {
-//                    DispatchQueue.main.asyncAfter(deadline: .now()+1) {
-//                        AdManager.shared.configureAds(canShowUMP)
-//                    }
                     if !PremiumManager.shared.isPremium {
                         showAppOpenAd()
                         showBannerAd()

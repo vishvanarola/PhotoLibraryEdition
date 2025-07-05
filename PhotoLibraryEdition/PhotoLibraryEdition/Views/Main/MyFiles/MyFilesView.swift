@@ -34,7 +34,7 @@ struct MyFilesView: View {
                 .navigationBarBackButtonHidden(true)
                 
                 if showCreateCollage {
-                    CreateCollageView(isPresented: $showCreateCollage, collageToEdit: collageToEdit)
+                    CreateCollageView(isPresented: $showCreateCollage, collageToEdit: collageToEdit, isTabBarHidden: $isTabBarHidden, navigationPath: $navigationPath)
                 }
             }
             .navigationDestination(for: MyFilesRoute.self) { route in
@@ -55,21 +55,16 @@ struct MyFilesView: View {
             rightButtonImageName: "ic_plus",
             headerTitle: "My Files",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 withAnimation {
                     selectedTab = .home
                 }
             },
             rightButtonAction: {
-                if PremiumManager.shared.hasUsed(feature: PremiumFeature.createCollage) && !PremiumManager.shared.isPremium {
-                    AdManager.shared.showInterstitialAd()
-                    isHideTabBackPremium = false
-                    isTabBarHidden = true
-                    navigationPath.append(MyFilesRoute.premium)
-                } else {
-                    withAnimation {
-                        showCreateCollage = true
-                        collageToEdit = nil
-                    }
+                AdManager.shared.showInterstitialAd()
+                withAnimation {
+                    showCreateCollage = true
+                    collageToEdit = nil
                 }
             }
         )
@@ -108,12 +103,14 @@ struct MyFilesView: View {
                         .padding(.horizontal, 20)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
+                                AdManager.shared.showInterstitialAd()
                                 deleteCollage(collage)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
                             
                             Button {
+                                AdManager.shared.showInterstitialAd()
                                 collageToEdit = collage
                                 showCreateCollage = true
                             } label: {

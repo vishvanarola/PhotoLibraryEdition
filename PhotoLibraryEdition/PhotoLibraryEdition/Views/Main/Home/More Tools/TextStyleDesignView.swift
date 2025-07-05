@@ -10,8 +10,8 @@ import SwiftUI
 struct TextStyleDesignView: View {
     @State var previewText: String = ""
     @State private var selectedFont: String? = nil
-    @Binding var isTabBarHidden: Bool
     @State private var showToast = false
+    @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
     let fontArray = ["Aloevera", "AngelinaPersonal", "BoogieBoysExtrude", "DarlingtonDemo", "Dirtyboy", "EnjelinaDemo", "Inferno", "KingstoneDemoRegular", "KnightWarrior", "MonainnRegular", "MouldyCheeseRegular", "RustyAttackDemo", "Scripto", "SkiwarRegular", "SoulsideBetrayed", "SuperFunky", "SuperRugged", "SuperScribble", "TheHeartOfEverythingDemo", "VeryVeryPunkFont"]
@@ -48,6 +48,7 @@ struct TextStyleDesignView: View {
             rightButtonImageName: nil,
             headerTitle: "Text Style",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -97,6 +98,7 @@ struct TextStyleDesignView: View {
                 .background(pinkThemeColor.opacity(0.05))
                 .padding(.horizontal, 20)
                 .onTapGesture {
+                    AdManager.shared.showInterstitialAd()
                     withAnimation {
                         if selectedFont == fontName {
                             selectedFont = nil
@@ -116,7 +118,7 @@ struct TextStyleDesignView: View {
                             } else {
                                 UIPasteboard.general.string = textToCopy
                             }
-                            PremiumManager.shared.markUsed(feature: PremiumFeature.textStyleDesign)
+                            PremiumManager.shared.markUsed()
                             // Show success message
                             showCopiedToast()
                         }

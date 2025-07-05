@@ -17,7 +17,9 @@ struct SettingsView: View {
         ZStack {
             VStack(spacing: 30) {
                 headerView
-                premiumView
+                if !PremiumManager.shared.isPremium {
+                    premiumView
+                }
                 ScrollView {
                     moreOptionsView
                 }
@@ -38,6 +40,7 @@ struct SettingsView: View {
             rightButtonImageName: nil,
             headerTitle: "Settings",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isHideTabBackPremium = true
                 isTabBarHidden = false
                 navigationPath.removeLast()
@@ -48,6 +51,7 @@ struct SettingsView: View {
     
     var premiumView: some View {
         Button {
+            AdManager.shared.showInterstitialAd()
             isHideTabBackPremium = true
             navigationPath.append(HomeDestination.premium)
         } label: {

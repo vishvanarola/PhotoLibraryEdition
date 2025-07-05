@@ -69,6 +69,7 @@ struct VideoConvertorView: View {
             rightButtonImageName: isVideoPicked ? "ic_share" : "ic_plus",
             headerTitle: "Video Convertor",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -103,14 +104,15 @@ struct VideoConvertorView: View {
                             player.pause()
                             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
                         }
-                    Button(action: {
+                    Button {
+                        AdManager.shared.showInterstitialAd()
                         if isPlaying {
                             player.pause()
                         } else {
                             player.play()
                         }
                         isPlaying.toggle()
-                    }) {
+                    } label: {
                         Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -118,17 +120,13 @@ struct VideoConvertorView: View {
                             .shadow(radius: 10)
                     }
                 }
-            } else {
-                Text("Pick a video to convert into mp3")
-                    .font(FontConstants.MontserratFonts.medium(size: 17))
-                    .foregroundStyle(.black)
-                    .padding()
             }
         }
     }
     
     var outputButton: some View {
         Button {
+            AdManager.shared.showInterstitialAd()
             if let url = pickedVideoURL {
                 convertVideo(originalURL: url)
             }
@@ -186,12 +184,12 @@ struct VideoConvertorView: View {
                         switch exportSession.status {
                         case .completed:
                             self.convertedVideoURL = outputURL
-                            let newPlayer = AVPlayer(url: outputURL)
-                            self.player = newPlayer
                             self.isPlaying = false
-                            configurePlayer(newPlayer)
+                            if let player = self.player {
+                                configurePlayer(player)
+                            }
                             self.showToast = true
-                            PremiumManager.shared.markUsed(feature: PremiumFeature.videoConverter)
+                            PremiumManager.shared.markUsed()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 self.showToast = false
                             }

@@ -37,9 +37,9 @@ struct HeaderView: View {
                         .foregroundStyle(Color.white)
                     Spacer()
                     if let rightImage = rightButtonImageName {
-                        Button(action: {
+                        Button {
                             rightButtonAction?()
-                        }) {
+                        } label: {
                             Image(rightImage)
                                 .resizable()
                                 .foregroundColor(.white)

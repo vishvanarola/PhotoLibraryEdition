@@ -16,30 +16,17 @@ struct HidePhotoView: View {
     @Query private var hidePhotos: [HidePhotoModel]
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
+    @State private var selectedImageData: Data?
+    @State private var isShowingPhotoPreview = false
     
     var body: some View {
-        VStack {
-            headerView
-            if hidePhotos.isEmpty {
-                Spacer()
-                Text("No photos added yet")
-                    .font(FontConstants.MontserratFonts.medium(size: 17))
-                Spacer()
+        Group {
+            if isShowingPhotoPreview {
+                fullPhotoView()
             } else {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
-                        ForEach(hidePhotos, id: \.id) { photo in
-                            if let uiImage = UIImage(data: photo.data) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 100)
-                                    .clipped()
-                                    .cornerRadius(8)
-                            }
-                        }
-                    }
-                    .padding()
+                VStack {
+                    headerView
+                    collagePhohotView
                 }
             }
         }
@@ -63,13 +50,82 @@ struct HidePhotoView: View {
             rightButtonImageName: "ic_plus",
             headerTitle: "Hide Photos",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
             rightButtonAction: {
-                showPhotoPicker = true
+                if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                    showPhotoPicker = true
+                } else {
+                    navigationPath.append(LockRoute.premium)
+                }
             }
         )
+    }
+    
+    var collagePhohotView: some View {
+        Group {
+            if hidePhotos.isEmpty {
+                Spacer()
+                Text("No photos added yet")
+                    .font(FontConstants.MontserratFonts.medium(size: 17))
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 10) {
+                        ForEach(hidePhotos, id: \.id) { photo in
+                            if let uiImage = UIImage(data: photo.data) {
+                                Button {
+                                    AdManager.shared.showInterstitialAd()
+                                    selectedImageData = photo.data
+                                    withAnimation {
+                                        isShowingPhotoPreview = true
+                                    }
+                                } label: {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 100)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+    }
+    
+    func fullPhotoView() -> some View {
+        Group {
+            ZStack(alignment: .topTrailing) {
+                Color.black.ignoresSafeArea()
+                if let data = selectedImageData, let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black)
+                }
+                
+                Button {
+                    AdManager.shared.showInterstitialAd()
+                    withAnimation {
+                        isShowingPhotoPreview = false
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                }
+                .frame(width: 30, height: 30)
+                .padding()
+                .foregroundColor(.white)
+                .padding(.top, 20)
+            }
+        }
     }
     
     func handleImageSelection() async {
@@ -81,7 +137,7 @@ struct HidePhotoView: View {
         }
         
         do {
-            PremiumManager.shared.markUsed(feature: PremiumFeature.addPhotosInHide)
+            PremiumManager.shared.markUsed()
             try modelContext.save()
         } catch {
             print("⚠️ Error saving images: \(error)")

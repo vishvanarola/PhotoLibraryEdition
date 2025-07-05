@@ -43,6 +43,7 @@ struct ForgotPasswordView: View {
             rightButtonImageName: nil,
             headerTitle: "Lock",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -114,6 +115,7 @@ struct ForgotPasswordView: View {
             }
             HStack(spacing: 15) {
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     cancelTapped()
                 } label: {
                     Text("Cancel")
@@ -122,6 +124,7 @@ struct ForgotPasswordView: View {
                 }
                 numberText(0) { numberTapped($0) }
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     doneTapped()
                 } label: {
                     Text("Done")

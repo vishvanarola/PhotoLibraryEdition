@@ -15,8 +15,8 @@ struct PremiumView: View {
     @State private var showPurchaseError = false
     @State private var purchaseErrorMessage = ""
     @State private var isPurchasing = false
-    @State private var isRestoring = false
-    @State private var showSuccess = false
+    @State private var showPurchaseSuccess = false
+    @State private var showRestoreSuccess = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     @Binding var isHiddenBanner: Bool
@@ -41,7 +41,7 @@ struct PremiumView: View {
                         .padding(.top, 10)
                     }
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now()+0.7) {
                             withAnimation(.easeOut(duration: 2)) {
                                 proxy.scrollTo("BOTTOM", anchor: .bottom)
                             }
@@ -56,12 +56,6 @@ struct PremiumView: View {
                 .padding(.bottom)
             }
             .padding(.horizontal, 20)
-            
-            if premiumManager.isLoadingProducts || isPurchasing || isRestoring {
-                Color.black.opacity(0.3).ignoresSafeArea()
-                ProgressView("Loading...")
-                    .progressViewStyle(CircularProgressViewStyle())
-            }
         }
         .onAppear {
             isHiddenBanner = true
@@ -77,10 +71,17 @@ struct PremiumView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-        .alert(isPresented: $showSuccess) {
+        .alert(isPresented: $showPurchaseSuccess) {
             Alert(
-                title: Text("Success"),
-                message: Text("Purchase successful!"),
+                title: Text("Purchase Successfully"),
+                message: Text("Enjoy app without ads!"),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .alert(isPresented: $showRestoreSuccess) {
+            Alert(
+                title: Text("Restore Successfully"),
+                message: Text("Enjoy app without ads!"),
                 dismissButton: .default(Text("OK"))
             )
         }
@@ -101,11 +102,9 @@ struct PremiumView: View {
     var restoreView: some View {
         HStack {
             Button {
-                isRestoring = true
                 premiumManager.restorePurchases { success, error in
-                    isRestoring = false
                     if success {
-                        showSuccess = true
+                        showRestoreSuccess = true
                     } else {
                         purchaseErrorMessage = error ?? "Restore failed."
                         showPurchaseError = true
@@ -118,6 +117,7 @@ struct PremiumView: View {
             }
             Spacer()
             Button {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = isHideTabBackPremium
                 navigationPath.removeLast()
             } label: {
@@ -172,6 +172,7 @@ struct PremiumView: View {
         VStack(spacing: 10) {
             ForEach(Array(premiumManager.products.enumerated()), id: \.element.productIdentifier) { index, product in
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     selectedPlanIndex = index
                 } label: {
                     SubscriptionPlanCell(
@@ -192,7 +193,7 @@ struct PremiumView: View {
             premiumManager.purchase(product: product) { success, error in
                 isPurchasing = false
                 if success {
-                    showSuccess = true
+                    showPurchaseSuccess = true
                 } else {
                     purchaseErrorMessage = error ?? "Purchase failed."
                     showPurchaseError = true

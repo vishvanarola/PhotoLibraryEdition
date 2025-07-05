@@ -89,13 +89,18 @@ struct HomeView: View {
                         .font(FontConstants.SyneFonts.semiBold(size: 23))
                         .foregroundStyle(Color.white)
                     Spacer()
-                    Button(action: {
-                        isHideTabBackPremium = false
-                        isTabBarHidden = true
-                        navigationPath.append(HomeDestination.premium)
-                    }) {
-                        Image("ic_pro")
-                            .foregroundColor(.white)
+                    if !PremiumManager.shared.isPremium {
+                        Button {
+                            isHideTabBackPremium = false
+                            isTabBarHidden = true
+                            navigationPath.append(HomeDestination.premium)
+                        } label: {
+                            Image("ic_pro")
+                                .foregroundColor(.white)
+                        }
+                    } else {
+                        Spacer()
+                        Spacer()
                     }
                 }
                 .padding(.bottom, 20)
@@ -142,7 +147,7 @@ struct HomeView: View {
             case .notDetermined:
                 VStack {
                     Spacer()
-                    ProgressView("Requesting access...")
+                    Text("Requesting access...")
                         .font(FontConstants.MontserratFonts.regular(size: 15))
                         .foregroundColor(.black)
                         .padding()
@@ -180,34 +185,12 @@ struct HomeView: View {
         }
     }
     
-    func premiumFeature(for destination: HomeDestination) -> PremiumFeature? {
-        switch destination {
-        case .textRepeater: return .textRepeat
-        case .textEmoji: return .textToEmoji
-        case .textStyleDesign: return .textStyleDesign
-        case .muteAudio: return .muteAudio
-        case .videoConvertor: return .videoConverter
-        default: return nil
-        }
-    }
-    
     func moreToolsButton(toolName: String, destination: HomeDestination) -> some View {
         HStack {
             Button {
                 isTabBarHidden = true
-                
-                if let feature = premiumFeature(for: destination) {
-                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed(feature: feature) && !PremiumManager.shared.isPremium {
-                        AdManager.shared.showInterstitialAd()
-                        navigationPath.append(destination)
-                    } else {
-                        isHideTabBackPremium = false
-                        navigationPath.append(HomeDestination.premium)
-                    }
-                } else {
-                    AdManager.shared.showInterstitialAd()
-                    navigationPath.append(destination)
-                }
+                AdManager.shared.showInterstitialAd()
+                navigationPath.append(destination)
             } label: {
                 Text(toolName)
                     .font(FontConstants.MontserratFonts.medium(size: 15))
@@ -246,6 +229,7 @@ struct VideoThumbnailView: View {
     @State private var thumbnail: UIImage? = nil
     @State private var videoName: String = ""
     @State private var videoSize: String = ""
+    @State private var isPresentingPlayer = false
     
     var body: some View {
         Group {
@@ -273,6 +257,12 @@ struct VideoThumbnailView: View {
                 .background(Color.white)
                 .cornerRadius(15)
                 .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 0)
+                .onTapGesture {
+                    isPresentingPlayer = true
+                }
+                .sheet(isPresented: $isPresentingPlayer) {
+                    VideoPlayerView(asset: asset)
+                }
             } else {
                 ZStack {
                     Color.gray.opacity(0.2)

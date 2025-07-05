@@ -30,35 +30,39 @@ class AdManager: NSObject, ObservableObject {
     
     // MARK: App Open Ad Methods
     func loadAppOpenAd(_ isShowAd: Bool) {
-        guard !appOpenAdUnitID.isEmpty else {
-            print("App Open Ad unit ID is empty.")
-            return
-        }
-        
-        AppOpenAd.load(with: appOpenAdUnitID, request: Request()) { [weak self] ad, error in
-            if let error = error {
-                print("Failed to load App Open Ad: \(error.localizedDescription)")
-                self?.isAppOpenAdReady = false
+        if !PremiumManager.shared.isPremium {
+            guard !appOpenAdUnitID.isEmpty else {
+                print("App Open Ad unit ID is empty.")
                 return
             }
             
-            self?.appOpenAd = ad
-            self?.appOpenAd?.fullScreenContentDelegate = self
-            if isShowAd {
-                self?.isAppOpenAdReady = true
+            AppOpenAd.load(with: appOpenAdUnitID, request: Request()) { [weak self] ad, error in
+                if let error = error {
+                    print("Failed to load App Open Ad: \(error.localizedDescription)")
+                    self?.isAppOpenAdReady = false
+                    return
+                }
+                
+                self?.appOpenAd = ad
+                self?.appOpenAd?.fullScreenContentDelegate = self
+                if isShowAd {
+                    self?.isAppOpenAdReady = true
+                }
+                print("App Open Ad loaded successfully.")
             }
-            print("App Open Ad loaded successfully.")
         }
     }
     
     func showAppOpenAdIfAvailable() {
-        if let ad = appOpenAd {
-            ad.present(from: UIApplication.shared.rootVC)
-            isAppOpenAdReady = false
-            loadAppOpenAd(false)
-        } else {
-            print("App Open Ad not ready. Triggering load.")
-            loadAppOpenAd(false)
+        if !PremiumManager.shared.isPremium {
+            if let ad = appOpenAd {
+                ad.present(from: UIApplication.shared.rootVC)
+                isAppOpenAdReady = false
+                loadAppOpenAd(false)
+            } else {
+                print("App Open Ad not ready. Triggering load.")
+                loadAppOpenAd(false)
+            }
         }
     }
     
@@ -97,18 +101,20 @@ class AdManager: NSObject, ObservableObject {
     }
     
     func showInterstitialAd() {
-        if interstitialIntergap == 3 {
-            if let interstitialAd = interstitialAd {
-                interstitialAd.present(from: UIApplication.shared.rootVC)
-                interstitialIntergap -= 1
-                loadInterstitialAd()
-                loadBannerAd()
+        if !PremiumManager.shared.isPremium {
+            if interstitialIntergap == remoteConfigAdShowCount {
+                if let interstitialAd = interstitialAd {
+                    interstitialAd.present(from: UIApplication.shared.rootVC)
+                    interstitialIntergap -= 1
+                    loadInterstitialAd()
+                    loadBannerAd()
+                } else {
+                    print("Interstitial Ad is not ready. Loading a new one.")
+                    loadInterstitialAd()
+                }
             } else {
-                print("Interstitial Ad is not ready. Loading a new one.")
-                loadInterstitialAd()
+                interstitialIntergap = interstitialIntergap <= 0 ? remoteConfigAdShowCount : interstitialIntergap-1
             }
-        } else {
-            interstitialIntergap = interstitialIntergap <= 0 ? 3 : interstitialIntergap-1
         }
     }
     

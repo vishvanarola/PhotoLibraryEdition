@@ -12,15 +12,18 @@ struct CreateCollageView: View {
     @State var collageName: String = ""
     @Binding var isPresented: Bool
     var collageToEdit: Collage?
-    @State private var showValidationError = false
     @FocusState private var isTextFieldFocused: Bool
+    @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
-    init(isPresented: Binding<Bool>, collageToEdit: Collage? = nil) {
+    init(isPresented: Binding<Bool>, collageToEdit: Collage? = nil, isTabBarHidden: Binding<Bool>, navigationPath: Binding<NavigationPath>) {
         self._isPresented = isPresented
         self.collageToEdit = collageToEdit
         if let collage = collageToEdit {
             _collageName = State(initialValue: collage.name)
         }
+        self._isTabBarHidden = isTabBarHidden
+        self._navigationPath = navigationPath
     }
     
     var body: some View {
@@ -42,21 +45,11 @@ struct CreateCollageView: View {
             .background(Color.white)
             .cornerRadius(10)
             .focused($isTextFieldFocused)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(showValidationError ? Color.red : Color.clear, lineWidth: 1)
-            )
-            
-            if showValidationError {
-                Text("Please enter a name.")
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
             
             HStack {
                 Spacer()
                 Button {
+                    AdManager.shared.showInterstitialAd()
                     withAnimation {
                         isPresented = false
                     }
@@ -71,28 +64,28 @@ struct CreateCollageView: View {
                     .background(textGrayColor)
                 Spacer()
                 Button {
-                    if collageName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        withAnimation {
-                            showValidationError = true
+                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                        AdManager.shared.showInterstitialAd()
+                        if let collage = collageToEdit {
+                            collage.name = collageName
+                        } else {
+                            let newCollage = Collage(name: collageName)
+                            modelContext.insert(newCollage)
                         }
-                        return
-                    }
-                    
-                    if let collage = collageToEdit {
-                        collage.name = collageName
+                        
+                        do {
+                            try modelContext.save()
+                            PremiumManager.shared.markUsed()
+                            withAnimation {
+                                isPresented = false
+                            }
+                        } catch {
+                            print("Failed to save collage: \(error)")
+                        }
                     } else {
-                        let newCollage = Collage(name: collageName)
-                        modelContext.insert(newCollage)
-                    }
-                    
-                    do {
-                        try modelContext.save()
-                        PremiumManager.shared.markUsed(feature: PremiumFeature.createCollage)
-                        withAnimation {
-                            isPresented = false
-                        }
-                    } catch {
-                        print("Failed to save collage: \(error)")
+                        isHideTabBackPremium = false
+                        isTabBarHidden = true
+                        navigationPath.append(MyFilesRoute.premium)
                     }
                 } label: {
                     Text(collageToEdit == nil ? "Create" : "Save")
@@ -118,8 +111,4 @@ struct CreateCollageView: View {
             }
         }
     }
-}
-
-#Preview {
-    CreateCollageView(isPresented: .constant(false))
 }

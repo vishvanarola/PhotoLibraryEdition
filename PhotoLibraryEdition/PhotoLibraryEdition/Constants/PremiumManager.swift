@@ -9,22 +9,11 @@ import Foundation
 import RevenueCat
 import Combine
 
-enum PremiumFeature: String, CaseIterable {
-    case textRepeat
-    case textToEmoji
-    case textStyleDesign
-    case muteAudio
-    case videoConverter
-    case createCollage
-    case addPhotosInCollage
-    case addPhotosInHide
-}
-
 class PremiumManager: ObservableObject {
     static let shared = PremiumManager()
 
     private let premiumKey = "isPremiumUser"
-    private let usagePrefix = "featureUsed_"
+    private let isFeatureUserd = "isFeatureUserd"
     private let userDefaults = UserDefaults.standard
     
     private let entitlementIdentifier = "premium_access"
@@ -119,20 +108,18 @@ class PremiumManager: ObservableObject {
     }
     
     // Check if feature has been used
-    func hasUsed(feature: PremiumFeature) -> Bool {
-        return userDefaults.bool(forKey: usagePrefix + feature.rawValue)
+    func hasUsed() -> Bool {
+        return userDefaults.bool(forKey: isFeatureUserd)
     }
     
     // Mark feature as used
-    func markUsed(feature: PremiumFeature) {
-        userDefaults.set(true, forKey: usagePrefix + feature.rawValue)
+    func markUsed() {
+        userDefaults.set(true, forKey: isFeatureUserd)
     }
     
     // Reset all usages (for testing or logout)
     func resetAllUsages() {
-        for feature in PremiumFeature.allCases {
-            userDefaults.removeObject(forKey: usagePrefix + feature.rawValue)
-        }
+        userDefaults.removeObject(forKey: isFeatureUserd)
     }
     
     // Set user as premium

@@ -13,6 +13,8 @@ struct TextRepeaterView: View {
     @State private var isAddSpaceSelected: Bool = false
     @State private var isNewLineSelected: Bool = false
     @State private var outputText: String = ""
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -40,6 +42,7 @@ struct TextRepeaterView: View {
             rightButtonImageName: nil,
             headerTitle: "Text Repeater",
             leftButtonAction: {
+                AdManager.shared.showInterstitialAd()
                 isTabBarHidden = false
                 navigationPath.removeLast()
             },
@@ -58,6 +61,7 @@ struct TextRepeaterView: View {
     var checkBoxView: some View {
         HStack(spacing: 20) {
             Button {
+                AdManager.shared.showInterstitialAd()
                 isAddSpaceSelected.toggle()
                 if isAddSpaceSelected { isNewLineSelected = false }
             } label: {
@@ -72,6 +76,7 @@ struct TextRepeaterView: View {
             }
             
             Button {
+                AdManager.shared.showInterstitialAd()
                 isNewLineSelected.toggle()
                 if isNewLineSelected { isAddSpaceSelected = false }
             } label: {
@@ -105,7 +110,7 @@ struct TextRepeaterView: View {
     
     var outputButton: some View {
         Button {
-            generateRepeatedText()
+            validateAndGenerateText()
         } label: {
             Text("Repeat")
                 .font(FontConstants.MontserratFonts.semiBold(size: 22))
@@ -117,6 +122,31 @@ struct TextRepeaterView: View {
         }
         .padding(.bottom)
         .padding(.horizontal, 20)
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Invalid Input"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
+    }
+    
+    private func validateAndGenerateText() {
+        guard !enterTextInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            alertMessage = "Please enter some text to repeat."
+            showAlert = true
+            return
+        }
+        
+        guard let count = Int(repeaterCountInput), count > 0 else {
+            alertMessage = "Please enter a valid repeater number greater than 0."
+            showAlert = true
+            return
+        }
+        
+        if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+            AdManager.shared.showInterstitialAd()
+            generateRepeatedText()
+            PremiumManager.shared.markUsed()
+        } else {
+            navigationPath.append(HomeDestination.premium)
+        }
     }
     
     private func generateRepeatedText() {
@@ -135,6 +165,6 @@ struct TextRepeaterView: View {
         }
         
         outputText = Array(repeating: enterTextInput, count: count).joined(separator: separator)
-        PremiumManager.shared.markUsed(feature: PremiumFeature.textRepeat)
+        PremiumManager.shared.markUsed()
     }
 }
