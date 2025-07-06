@@ -50,12 +50,3 @@ extension Character {
                unicodeScalars.contains { $0.properties.isEmoji }
     }
 }
-
-#Preview {
-    TextFieldView(
-        headerTitle: "Username",
-        placeholder: "Enter your username",
-        text: .constant(""),
-        keyboardType: .default
-    )
-}

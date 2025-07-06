@@ -54,7 +54,7 @@ struct TextEmojiView: View {
     }
     
     var enterEmojiView: some View {
-        TextFieldView(headerTitle: "Enter Emoji", placeholder: "E.g. 🤩", text: $emojiInput, keyboardType: .default, isEmoji: true)
+        TextFieldView(headerTitle: "Enter Emoji", placeholder: "E.g. 🤩", keyboardType: .default, isEmoji: true, text: $emojiInput)
     }
     
     var outputTextView: some View {

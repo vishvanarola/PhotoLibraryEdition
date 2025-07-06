@@ -57,7 +57,7 @@ struct TextRepeaterView: View {
     }
     
     var enterRepeaterView: some View {
-        TextFieldView(headerTitle: "Enter Repeater", placeholder: "E.g. 3", text: $repeaterCountInput, keyboardType: .numberPad)
+        TextFieldView(headerTitle: "Enter Repeater", placeholder: "E.g. 3", keyboardType: .numberPad, text: $repeaterCountInput)
     }
     
     var checkBoxView: some View {
