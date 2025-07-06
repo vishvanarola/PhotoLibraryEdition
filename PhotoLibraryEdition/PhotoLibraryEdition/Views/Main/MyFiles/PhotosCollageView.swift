@@ -11,13 +11,14 @@ import SwiftData
 
 struct PhotosCollageView: View {
     @Environment(\.modelContext) private var modelContext
-    @Bindable var collage: Collage
     @State private var showPhotoPicker = false
     @State private var selectedItems: [PhotosPickerItem] = []
-    @Binding var isTabBarHidden: Bool
-    @Binding var navigationPath: NavigationPath
     @State private var selectedImageData: Data?
     @State private var isShowingPhotoPreview = false
+    @State private var showNoInternetAlert: Bool = false
+    @Bindable var collage: Collage
+    @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         Group {
@@ -43,6 +44,7 @@ struct PhotosCollageView: View {
                 await handleImageSelection()
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -56,12 +58,16 @@ struct PhotosCollageView: View {
                 navigationPath.removeLast()
             },
             rightButtonAction: {
-                if PremiumManager.shared.hasUsed() && !PremiumManager.shared.isPremium {
-                    AdManager.shared.showInterstitialAd()
-                    isHideTabBackPremium = true
-                    navigationPath.append(MyFilesRoute.premium)
+                if ReachabilityManager.shared.isNetworkAvailable {
+                    if PremiumManager.shared.hasUsed() && !PremiumManager.shared.isPremium {
+                        AdManager.shared.showInterstitialAd()
+                        isHideTabBackPremium = true
+                        navigationPath.append(MyFilesRoute.premium)
+                    } else {
+                        showPhotoPicker = true
+                    }
                 } else {
-                    showPhotoPicker = true
+                    showNoInternetAlert = true
                 }
             }
         )

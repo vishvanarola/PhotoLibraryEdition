@@ -14,18 +14,18 @@ enum LockRoute: Hashable {
 }
 
 struct LockScreenView: View {
-    @Binding var selectedTab: CustomTab
     @State private var passwordFields: [String] = Array(repeating: "", count: 4)
     @State private var currentIndex: Int = 0
     @State var password: String = ""
     @State var confirmedPassword: String = ""
-    @Binding var isTabBarHidden: Bool
     @State var headingTitle: String = "Set your four digit password"
     @State private var isConfirmingPassword: Bool = false
     @State private var showMismatchAlert: Bool = false
     @State private var isPasswordAlreadySet: Bool = false
     @State private var showWrongPasswordAlert: Bool = false
     @State private var navigationPath = NavigationPath()
+    @Binding var selectedTab: CustomTab
+    @Binding var isTabBarHidden: Bool
     @Binding var isHiddenBanner: Bool
     
     var body: some View {

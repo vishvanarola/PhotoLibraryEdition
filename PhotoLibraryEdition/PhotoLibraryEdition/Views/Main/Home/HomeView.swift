@@ -20,6 +20,10 @@ enum HomeDestination: Hashable {
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @State private var navigationPath = NavigationPath()
+    @State private var showNoInternetAlert: Bool = false
+    @Binding var isTabBarHidden: Bool
+    @Binding var isHiddenBanner: Bool
     let tools: [(name: String, destination: HomeDestination)] = [
         ("Text\nRepeater", .textRepeater),
         ("Text\nto Emoji", .textEmoji),
@@ -27,9 +31,6 @@ struct HomeView: View {
         ("Mute\nAudio", .muteAudio),
         ("Video\nConvertor", .videoConvertor)
     ]
-    @State private var navigationPath = NavigationPath()
-    @Binding var isTabBarHidden: Bool
-    @Binding var isHiddenBanner: Bool
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -66,6 +67,7 @@ struct HomeView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -91,9 +93,13 @@ struct HomeView: View {
                     Spacer()
                     if !PremiumManager.shared.isPremium {
                         Button {
-                            isHideTabBackPremium = false
-                            isTabBarHidden = true
-                            navigationPath.append(HomeDestination.premium)
+                            if ReachabilityManager.shared.isNetworkAvailable {
+                                isHideTabBackPremium = false
+                                isTabBarHidden = true
+                                navigationPath.append(HomeDestination.premium)
+                            } else {
+                                showNoInternetAlert = true
+                            }
                         } label: {
                             Image("ic_pro")
                                 .foregroundColor(.white)
@@ -230,6 +236,7 @@ struct VideoThumbnailView: View {
     @State private var videoName: String = ""
     @State private var videoSize: String = ""
     @State private var isPresentingPlayer = false
+    @State private var showNoInternetAlert: Bool = false
     
     var body: some View {
         Group {
@@ -258,7 +265,11 @@ struct VideoThumbnailView: View {
                 .cornerRadius(15)
                 .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 0)
                 .onTapGesture {
-                    isPresentingPlayer = true
+                    if ReachabilityManager.shared.isNetworkAvailable {
+                        isPresentingPlayer = true
+                    } else {
+                        showNoInternetAlert = true
+                    }
                 }
                 .sheet(isPresented: $isPresentingPlayer) {
                     VideoPlayerView(asset: asset)
@@ -274,6 +285,7 @@ struct VideoThumbnailView: View {
             loadThumbnail()
             loadVideoInfo()
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     private func loadThumbnail() {

@@ -10,9 +10,9 @@ import SwiftUI
 struct TextFieldView: View {
     let headerTitle: String
     let placeholder: String
-    @Binding var text: String
     var keyboardType: UIKeyboardType = .default
     var isEmoji: Bool = false
+    @Binding var text: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {

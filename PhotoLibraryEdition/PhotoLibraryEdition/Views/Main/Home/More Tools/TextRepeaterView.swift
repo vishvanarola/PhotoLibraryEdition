@@ -15,6 +15,7 @@ struct TextRepeaterView: View {
     @State private var outputText: String = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var showNoInternetAlert: Bool = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -34,6 +35,7 @@ struct TextRepeaterView: View {
             outputButton
         }
         .ignoresSafeArea()
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -110,7 +112,12 @@ struct TextRepeaterView: View {
     
     var outputButton: some View {
         Button {
-            validateAndGenerateText()
+            if ReachabilityManager.shared.isNetworkAvailable {
+                validateAndGenerateText()
+            } else {
+                showNoInternetAlert = true
+
+            }
         } label: {
             Text("Repeat")
                 .font(FontConstants.MontserratFonts.semiBold(size: 22))

@@ -12,10 +12,10 @@ enum CustomTab {
 }
 
 struct TabBarView: View {
+    @ObservedObject var adManager = AdManager.shared
     @State private var selectedTab: CustomTab = .home
     @State private var isTabBarHidden: Bool = false
     @State private var isHiddenBanner: Bool = false
-    @ObservedObject var adManager = AdManager.shared
     
     var body: some View {
         VStack {

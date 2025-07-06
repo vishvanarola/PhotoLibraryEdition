@@ -13,6 +13,7 @@ struct TextEmojiView: View {
     @State private var outputText: String = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var showNoInternetAlert: Bool = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -31,6 +32,7 @@ struct TextEmojiView: View {
             outputButton
         }
         .ignoresSafeArea()
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -73,7 +75,12 @@ struct TextEmojiView: View {
     
     var outputButton: some View {
         Button {
-            validateAndGenerateEmojiText()
+            if ReachabilityManager.shared.isNetworkAvailable {
+                validateAndGenerateEmojiText()
+            } else {
+                showNoInternetAlert = true
+
+            }
         } label: {
             Text("Generate Emoji")
                 .font(FontConstants.MontserratFonts.semiBold(size: 22))

@@ -11,6 +11,7 @@ struct TextStyleDesignView: View {
     @State var previewText: String = ""
     @State private var selectedFont: String? = nil
     @State private var showToast = false
+    @State private var showNoInternetAlert: Bool = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -40,6 +41,7 @@ struct TextStyleDesignView: View {
             }
         }
         .ignoresSafeArea()
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -98,30 +100,35 @@ struct TextStyleDesignView: View {
                 .background(pinkThemeColor.opacity(0.05))
                 .padding(.horizontal, 20)
                 .onTapGesture {
-                    AdManager.shared.showInterstitialAd()
-                    withAnimation {
-                        if selectedFont == fontName {
-                            selectedFont = nil
-                        } else {
-                            selectedFont = fontName
-                            let textToCopy = previewText.isEmpty ? "Sample Text" : previewText
-                            if let uiFont = UIFont(name: fontName, size: 24) {
-                                let attributes: [NSAttributedString.Key: Any] = [
-                                    .font: uiFont
-                                ]
-                                let attributedString = NSAttributedString(string: textToCopy, attributes: attributes)
-                                if let rtfData = try? attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]) {
-                                    UIPasteboard.general.setData(rtfData, forPasteboardType: "public.rtf")
+                    if ReachabilityManager.shared.isNetworkAvailable {
+                        AdManager.shared.showInterstitialAd()
+                        withAnimation {
+                            if selectedFont == fontName {
+                                selectedFont = nil
+                            } else {
+                                selectedFont = fontName
+                                let textToCopy = previewText.isEmpty ? "Sample Text" : previewText
+                                if let uiFont = UIFont(name: fontName, size: 24) {
+                                    let attributes: [NSAttributedString.Key: Any] = [
+                                        .font: uiFont
+                                    ]
+                                    let attributedString = NSAttributedString(string: textToCopy, attributes: attributes)
+                                    if let rtfData = try? attributedString.data(from: NSRange(location: 0, length: attributedString.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]) {
+                                        UIPasteboard.general.setData(rtfData, forPasteboardType: "public.rtf")
+                                    } else {
+                                        UIPasteboard.general.string = textToCopy
+                                    }
                                 } else {
                                     UIPasteboard.general.string = textToCopy
                                 }
-                            } else {
-                                UIPasteboard.general.string = textToCopy
+                                PremiumManager.shared.markUsed()
+                                // Show success message
+                                showCopiedToast()
                             }
-                            PremiumManager.shared.markUsed()
-                            // Show success message
-                            showCopiedToast()
                         }
+                    } else {
+                        showNoInternetAlert = true
+
                     }
                 }
             }

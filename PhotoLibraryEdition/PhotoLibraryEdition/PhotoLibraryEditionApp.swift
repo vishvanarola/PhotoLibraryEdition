@@ -20,6 +20,8 @@ struct PhotoLibraryEditionApp: App {
         IQKeyboardManager.shared.resignOnTouchOutside = true
         IQKeyboardManager.shared.keyboardDistance = 10
         
+        ReachabilityManager.shared.startMonitoring()
+        
         FirebaseApp.configure()
         
         PremiumManager.shared.configureRevenueCat()

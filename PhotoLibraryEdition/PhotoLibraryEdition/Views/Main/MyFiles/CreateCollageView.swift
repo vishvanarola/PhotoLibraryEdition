@@ -9,12 +9,13 @@ import SwiftUI
 
 struct CreateCollageView: View {
     @Environment(\.modelContext) private var modelContext
-    @State var collageName: String = ""
-    @Binding var isPresented: Bool
-    var collageToEdit: Collage?
     @FocusState private var isTextFieldFocused: Bool
+    @State var collageName: String = ""
+    @State private var showNoInternetAlert: Bool = false
+    @Binding var isPresented: Bool
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
+    var collageToEdit: Collage?
     
     init(isPresented: Binding<Bool>, collageToEdit: Collage? = nil, isTabBarHidden: Binding<Bool>, navigationPath: Binding<NavigationPath>) {
         self._isPresented = isPresented
@@ -64,28 +65,32 @@ struct CreateCollageView: View {
                     .background(textGrayColor)
                 Spacer()
                 Button {
-                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
-                        AdManager.shared.showInterstitialAd()
-                        if let collage = collageToEdit {
-                            collage.name = collageName
-                        } else {
-                            let newCollage = Collage(name: collageName)
-                            modelContext.insert(newCollage)
-                        }
-                        
-                        do {
-                            try modelContext.save()
-                            PremiumManager.shared.markUsed()
-                            withAnimation {
-                                isPresented = false
+                    if ReachabilityManager.shared.isNetworkAvailable {
+                        if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                            AdManager.shared.showInterstitialAd()
+                            if let collage = collageToEdit {
+                                collage.name = collageName
+                            } else {
+                                let newCollage = Collage(name: collageName)
+                                modelContext.insert(newCollage)
                             }
-                        } catch {
-                            print("Failed to save collage: \(error)")
+                            
+                            do {
+                                try modelContext.save()
+                                PremiumManager.shared.markUsed()
+                                withAnimation {
+                                    isPresented = false
+                                }
+                            } catch {
+                                print("Failed to save collage: \(error)")
+                            }
+                        } else {
+                            isHideTabBackPremium = false
+                            isTabBarHidden = true
+                            navigationPath.append(MyFilesRoute.premium)
                         }
                     } else {
-                        isHideTabBackPremium = false
-                        isTabBarHidden = true
-                        navigationPath.append(MyFilesRoute.premium)
+                        showNoInternetAlert = true
                     }
                 } label: {
                     Text(collageToEdit == nil ? "Create" : "Save")
@@ -110,5 +115,6 @@ struct CreateCollageView: View {
                 isTextFieldFocused = true
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
 }

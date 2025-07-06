@@ -9,7 +9,6 @@ import GoogleMobileAds
 import AppTrackingTransparency
 import UserMessagingPlatform
 import AdSupport
-import SwiftyAds
 
 class AdManager: NSObject, ObservableObject {
     static let shared = AdManager()

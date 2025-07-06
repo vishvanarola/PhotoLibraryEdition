@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var isTabBarHidden: Bool
-    @State private var isShowingShareSheet = false
-    @Binding var navigationPath: NavigationPath
     @Environment(\.openURL) var openURL
+    @State private var isShowingShareSheet = false
+    @State private var showNoInternetAlert: Bool = false
+    @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         ZStack {
@@ -32,6 +33,7 @@ struct SettingsView: View {
                 ActivityView(activityItems: [appUrl])
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -51,9 +53,13 @@ struct SettingsView: View {
     
     var premiumView: some View {
         Button {
-            AdManager.shared.showInterstitialAd()
-            isHideTabBackPremium = true
-            navigationPath.append(HomeDestination.premium)
+            if ReachabilityManager.shared.isNetworkAvailable {
+                AdManager.shared.showInterstitialAd()
+                isHideTabBackPremium = true
+                navigationPath.append(HomeDestination.premium)
+            } else {
+                showNoInternetAlert = true
+            }
         } label: {
             ZStack {
                 HStack(spacing: 0) {
@@ -97,17 +103,17 @@ struct SettingsView: View {
             VStack(spacing: 20) {
                 options(image: "ic_star", text: "Rate Us") {
                     if let url = appRateLink {
-                        openURL(url)
+                        openUrls(url)
                     }
                 }
                 options(image: "ic_secure", text: "Privacy & Policy") {
                     if let url = privacyPolicy {
-                        openURL(url)
+                        openUrls(url)
                     }
                 }
                 options(image: "ic_terms", text: "Terms & Condition") {
                     if let url = termsCondition {
-                        openURL(url)
+                        openUrls(url)
                     }
                 }
             }
@@ -139,6 +145,14 @@ struct SettingsView: View {
                 Spacer()
             }
             .padding(.leading, 28)
+        }
+    }
+    
+    func openUrls(_ url: URL) {
+        if ReachabilityManager.shared.isNetworkAvailable {
+            openURL(url)
+        } else {
+            showNoInternetAlert = true
         }
     }
 }

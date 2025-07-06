@@ -11,13 +11,14 @@ import SwiftData
 
 struct HidePhotoView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var hidePhotos: [HidePhotoModel]
     @State private var showPhotoPicker = false
     @State private var selectedItems: [PhotosPickerItem] = []
-    @Query private var hidePhotos: [HidePhotoModel]
-    @Binding var isTabBarHidden: Bool
-    @Binding var navigationPath: NavigationPath
     @State private var selectedImageData: Data?
     @State private var isShowingPhotoPreview = false
+    @State private var showNoInternetAlert: Bool = false
+    @Binding var isTabBarHidden: Bool
+    @Binding var navigationPath: NavigationPath
     
     var body: some View {
         Group {
@@ -42,6 +43,7 @@ struct HidePhotoView: View {
                 await handleImageSelection()
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -55,10 +57,14 @@ struct HidePhotoView: View {
                 navigationPath.removeLast()
             },
             rightButtonAction: {
-                if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
-                    showPhotoPicker = true
+                if ReachabilityManager.shared.isNetworkAvailable {
+                    if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                        showPhotoPicker = true
+                    } else {
+                        navigationPath.append(LockRoute.premium)
+                    }
                 } else {
-                    navigationPath.append(LockRoute.premium)
+                    showNoInternetAlert = true
                 }
             }
         )

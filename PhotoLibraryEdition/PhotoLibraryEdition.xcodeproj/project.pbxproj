@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF3F42E152E4600C66677 /* RevenueCat */; };
 		180FF5262E16D40B00C66677 /* SwiftyAds in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF5252E16D40B00C66677 /* SwiftyAds */; };
+		180FF6852E1A6ADF00C66677 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF6842E1A6ADF00C66677 /* Reachability */; };
 		184073942E13DFDD007EA578 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 184073932E13DFDD007EA578 /* FirebaseCrashlytics */; };
 		184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 184073952E13DFDD007EA578 /* FirebaseRemoteConfig */; };
 		1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 1840739A2E13E71C007EA578 /* GoogleMobileAds */; };
@@ -46,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */,
+				180FF6852E1A6ADF00C66677 /* Reachability in Frameworks */,
 				184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */,
 				180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */,
 				18F9343E2E06DE9600FC5268 /* IQKeyboardManagerSwift in Frameworks */,
@@ -100,6 +102,7 @@
 				1840739A2E13E71C007EA578 /* GoogleMobileAds */,
 				180FF3F42E152E4600C66677 /* RevenueCat */,
 				180FF5252E16D40B00C66677 /* SwiftyAds */,
+				180FF6842E1A6ADF00C66677 /* Reachability */,
 			);
 			productName = PhotoLibraryEdition;
 			productReference = 18F933022E03E58900FC5268 /* PhotoLibraryEdition.app */;
@@ -135,6 +138,7 @@
 				184073992E13E71C007EA578 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				180FF3F32E152E4600C66677 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				180FF5242E16D40B00C66677 /* XCRemoteSwiftPackageReference "swifty-ads" */,
+				180FF6832E1A6ADF00C66677 /* XCRemoteSwiftPackageReference "Reachability.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 18F933032E03E58900FC5268 /* Products */;
@@ -319,7 +323,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"PhotoLibraryEdition/Preview Content\"";
 				DEVELOPMENT_TEAM = 94PFXF76F8;
@@ -358,7 +362,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"PhotoLibraryEdition/Preview Content\"";
 				DEVELOPMENT_TEAM = 94PFXF76F8;
@@ -431,6 +435,14 @@
 				minimumVersion = 20.2.0;
 			};
 		};
+		180FF6832E1A6ADF00C66677 /* XCRemoteSwiftPackageReference "Reachability.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -467,6 +479,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 180FF5242E16D40B00C66677 /* XCRemoteSwiftPackageReference "swifty-ads" */;
 			productName = SwiftyAds;
+		};
+		180FF6842E1A6ADF00C66677 /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180FF6832E1A6ADF00C66677 /* XCRemoteSwiftPackageReference "Reachability.swift" */;
+			productName = Reachability;
 		};
 		184073932E13DFDD007EA578 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;

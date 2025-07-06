@@ -20,6 +20,7 @@ struct MuteAudioView: View {
     @State private var isShowingMutedVideo = false
     @State private var isPlaying = false
     @State private var showToast = false
+    @State private var showNoInternetAlert: Bool = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -64,6 +65,7 @@ struct MuteAudioView: View {
                 }
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -134,13 +136,18 @@ struct MuteAudioView: View {
     
     var outputButton: some View {
         Button {
-            if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
-                AdManager.shared.showInterstitialAd()
-                if let url = pickedVideoURL {
-                    muteVideo(originalURL: url)
+            if ReachabilityManager.shared.isNetworkAvailable {
+                if PremiumManager.shared.isPremium || !PremiumManager.shared.hasUsed() {
+                    AdManager.shared.showInterstitialAd()
+                    if let url = pickedVideoURL {
+                        muteVideo(originalURL: url)
+                    }
+                } else {
+                    navigationPath.append(HomeDestination.premium)
                 }
             } else {
-                navigationPath.append(HomeDestination.premium)
+                showNoInternetAlert = true
+
             }
         } label: {
             Text("Mute Audio")

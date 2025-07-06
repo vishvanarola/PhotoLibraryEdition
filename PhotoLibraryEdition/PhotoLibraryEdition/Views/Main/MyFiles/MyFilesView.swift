@@ -14,12 +14,13 @@ enum MyFilesRoute: Hashable {
 }
 
 struct MyFilesView: View {
-    @State private var showCreateCollage = false
-    @State private var collageToEdit: Collage? = nil
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Collage.createdAt, order: .reverse) private var collages: [Collage]
-    @Binding var selectedTab: CustomTab
+    @State private var showCreateCollage = false
+    @State private var collageToEdit: Collage? = nil
     @State private var navigationPath = NavigationPath()
+    @State private var showNoInternetAlert: Bool = false
+    @Binding var selectedTab: CustomTab
     @Binding var isTabBarHidden: Bool
     @Binding var isHiddenBanner: Bool
     
@@ -46,6 +47,7 @@ struct MyFilesView: View {
                         .navigationBarBackButtonHidden(true)
                 }
             }
+            .noInternetAlert(isPresented: $showNoInternetAlert)
         }
     }
     
@@ -61,10 +63,14 @@ struct MyFilesView: View {
                 }
             },
             rightButtonAction: {
-                AdManager.shared.showInterstitialAd()
-                withAnimation {
-                    showCreateCollage = true
-                    collageToEdit = nil
+                if ReachabilityManager.shared.isNetworkAvailable {
+                    AdManager.shared.showInterstitialAd()
+                    withAnimation {
+                        showCreateCollage = true
+                        collageToEdit = nil
+                    }
+                } else {
+                    showNoInternetAlert = true
                 }
             }
         )
@@ -103,25 +109,37 @@ struct MyFilesView: View {
                         .padding(.horizontal, 20)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
-                                AdManager.shared.showInterstitialAd()
-                                deleteCollage(collage)
+                                if ReachabilityManager.shared.isNetworkAvailable {
+                                    AdManager.shared.showInterstitialAd()
+                                    deleteCollage(collage)
+                                } else {
+                                    showNoInternetAlert = true
+                                }
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
                             
                             Button {
-                                AdManager.shared.showInterstitialAd()
-                                collageToEdit = collage
-                                showCreateCollage = true
+                                if ReachabilityManager.shared.isNetworkAvailable {
+                                    AdManager.shared.showInterstitialAd()
+                                    collageToEdit = collage
+                                    showCreateCollage = true
+                                } else {
+                                    showNoInternetAlert = true
+                                }
                             } label: {
                                 Label("Edit", systemImage: "pencil")
                             }
                             .tint(.blue)
                         }
                         .onTapGesture {
-                            AdManager.shared.showInterstitialAd()
-                            isTabBarHidden = true
-                            navigationPath.append(MyFilesRoute.photosCollage(collage))
+                            if ReachabilityManager.shared.isNetworkAvailable {
+                                AdManager.shared.showInterstitialAd()
+                                isTabBarHidden = true
+                                navigationPath.append(MyFilesRoute.photosCollage(collage))
+                            } else {
+                                showNoInternetAlert = true
+                            }
                         }
                     }
                 }

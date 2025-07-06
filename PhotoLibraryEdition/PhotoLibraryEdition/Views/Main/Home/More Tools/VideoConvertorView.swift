@@ -18,6 +18,7 @@ struct VideoConvertorView: View {
     @State private var convertedVideoURL: URL? = nil
     @State private var isPlaying = false
     @State private var showToast = false
+    @State private var showNoInternetAlert: Bool = false
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     
@@ -61,6 +62,7 @@ struct VideoConvertorView: View {
                 }
             }
         }
+        .noInternetAlert(isPresented: $showNoInternetAlert)
     }
     
     var headerView: some View {
@@ -126,9 +128,14 @@ struct VideoConvertorView: View {
     
     var outputButton: some View {
         Button {
-            AdManager.shared.showInterstitialAd()
-            if let url = pickedVideoURL {
-                convertVideo(originalURL: url)
+            if ReachabilityManager.shared.isNetworkAvailable {
+                AdManager.shared.showInterstitialAd()
+                if let url = pickedVideoURL {
+                    convertVideo(originalURL: url)
+                }
+            } else {
+                showNoInternetAlert = true
+
             }
         } label: {
             Text("Video Convertor")
