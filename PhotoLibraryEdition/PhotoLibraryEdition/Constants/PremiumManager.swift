@@ -11,12 +11,12 @@ import Combine
 
 class PremiumManager: ObservableObject {
     static let shared = PremiumManager()
-
+    
     private let premiumKey = "isPremiumUser"
     private let isFeatureUserd = "isFeatureUserd"
     private let userDefaults = UserDefaults.standard
     
-    private let entitlementIdentifier = "premium_access"
+    private let entitlementIdentifier = "Pro"
     
     @Published var products: [StoreProduct] = []
     @Published var isLoadingProducts = false

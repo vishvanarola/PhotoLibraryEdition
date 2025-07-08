@@ -67,35 +67,39 @@ class AdManager: NSObject, ObservableObject {
     
     // MARK: Banner Ad Methods
     func loadBannerAd(adSize: AdSize = AdSizeBanner) {
-        guard !bannerAdUnitID.isEmpty else {
-            print("Banner Ad unit ID is empty.")
-            return
+        if !PremiumManager.shared.isPremium {
+            guard !bannerAdUnitID.isEmpty else {
+                print("Banner Ad unit ID is empty.")
+                return
+            }
+            bannerView = BannerView(adSize: adSize)
+            bannerView?.adUnitID = bannerAdUnitID
+            bannerView?.rootViewController = UIApplication.shared.rootVC
+            bannerView?.load(Request())
+            print("Banner Ad loading...")
+            bannerView?.delegate = self
         }
-        bannerView = BannerView(adSize: adSize)
-        bannerView?.adUnitID = bannerAdUnitID
-        bannerView?.rootViewController = UIApplication.shared.rootVC
-        bannerView?.load(Request())
-        print("Banner Ad loading...")
-        bannerView?.delegate = self
     }
     
     // MARK: Interstitial Ad Methods
     func loadInterstitialAd() {
-        guard !interstitialAdUnitID.isEmpty else {
-            print("Interstitial Ad unit ID is empty.")
-            return
-        }
-        
-        InterstitialAd.load(with: interstitialAdUnitID, request: Request()) { [weak self] ad, error in
-            if let error = error {
-                print("Failed to load Interstitial Ad: \(error.localizedDescription)")
-                self?.interstitialAd = nil
+        if !PremiumManager.shared.isPremium {
+            guard !interstitialAdUnitID.isEmpty else {
+                print("Interstitial Ad unit ID is empty.")
                 return
             }
             
-            self?.interstitialAd = ad
-            self?.interstitialAd?.fullScreenContentDelegate = self
-            print("Interstitial Ad loaded successfully.")
+            InterstitialAd.load(with: interstitialAdUnitID, request: Request()) { [weak self] ad, error in
+                if let error = error {
+                    print("Failed to load Interstitial Ad: \(error.localizedDescription)")
+                    self?.interstitialAd = nil
+                    return
+                }
+                
+                self?.interstitialAd = ad
+                self?.interstitialAd?.fullScreenContentDelegate = self
+                print("Interstitial Ad loaded successfully.")
+            }
         }
     }
     

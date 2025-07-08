@@ -104,6 +104,7 @@ struct PremiumView: View {
             Button {
                 premiumManager.restorePurchases { success, error in
                     if success {
+                        premiumManager.checkPremiumStatus()
                         showRestoreSuccess = true
                     } else {
                         purchaseErrorMessage = error ?? "Restore failed."
@@ -193,6 +194,7 @@ struct PremiumView: View {
             premiumManager.purchase(product: product) { success, error in
                 isPurchasing = false
                 if success {
+                    premiumManager.checkPremiumStatus()
                     showPurchaseSuccess = true
                 } else {
                     purchaseErrorMessage = error ?? "Purchase failed."
