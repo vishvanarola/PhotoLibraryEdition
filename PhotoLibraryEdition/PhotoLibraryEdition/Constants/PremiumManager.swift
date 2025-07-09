@@ -31,9 +31,7 @@ class PremiumManager: ObservableObject {
     private init() {}
     
     func configureRevenueCat() {
-        Purchases.logLevel = .debug
         Purchases.configure(withAPIKey: "appl_jRHlDNzsihlmwrJknwABegaBXoP")
-        fetchProducts()
         checkPremiumStatus()
     }
     
@@ -102,6 +100,7 @@ class PremiumManager: ObservableObject {
                     self.setPremium(true)
                 } else {
                     self.setPremium(false)
+                    self.fetchProducts()
                 }
             }
         }

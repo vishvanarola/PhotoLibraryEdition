@@ -59,7 +59,9 @@ struct PremiumView: View {
         }
         .onAppear {
             isHiddenBanner = true
-            premiumManager.configureRevenueCat()
+            if premiumManager.products.count <= 0 {
+                premiumManager.fetchProducts()
+            }
         }
         .onDisappear {
             isHiddenBanner = false

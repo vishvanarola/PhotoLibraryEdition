@@ -10,9 +10,9 @@
 		180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF3F42E152E4600C66677 /* RevenueCat */; };
 		180FF5262E16D40B00C66677 /* SwiftyAds in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF5252E16D40B00C66677 /* SwiftyAds */; };
 		180FF6852E1A6ADF00C66677 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF6842E1A6ADF00C66677 /* Reachability */; };
+		180FF90E2E1D36A800C66677 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 180FF90D2E1D36A800C66677 /* GoogleMobileAds */; };
 		184073942E13DFDD007EA578 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 184073932E13DFDD007EA578 /* FirebaseCrashlytics */; };
 		184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 184073952E13DFDD007EA578 /* FirebaseRemoteConfig */; };
-		1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 1840739A2E13E71C007EA578 /* GoogleMobileAds */; };
 		18F9343E2E06DE9600FC5268 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 18F9343D2E06DE9600FC5268 /* IQKeyboardManagerSwift */; };
 /* End PBXBuildFile section */
 
@@ -46,13 +46,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1840739B2E13E71C007EA578 /* GoogleMobileAds in Frameworks */,
 				180FF6852E1A6ADF00C66677 /* Reachability in Frameworks */,
 				184073962E13DFDD007EA578 /* FirebaseRemoteConfig in Frameworks */,
 				180FF3F52E152E4600C66677 /* RevenueCat in Frameworks */,
 				18F9343E2E06DE9600FC5268 /* IQKeyboardManagerSwift in Frameworks */,
 				184073942E13DFDD007EA578 /* FirebaseCrashlytics in Frameworks */,
 				180FF5262E16D40B00C66677 /* SwiftyAds in Frameworks */,
+				180FF90E2E1D36A800C66677 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,10 +99,10 @@
 				18F9343D2E06DE9600FC5268 /* IQKeyboardManagerSwift */,
 				184073932E13DFDD007EA578 /* FirebaseCrashlytics */,
 				184073952E13DFDD007EA578 /* FirebaseRemoteConfig */,
-				1840739A2E13E71C007EA578 /* GoogleMobileAds */,
 				180FF3F42E152E4600C66677 /* RevenueCat */,
 				180FF5252E16D40B00C66677 /* SwiftyAds */,
 				180FF6842E1A6ADF00C66677 /* Reachability */,
+				180FF90D2E1D36A800C66677 /* GoogleMobileAds */,
 			);
 			productName = PhotoLibraryEdition;
 			productReference = 18F933022E03E58900FC5268 /* PhotoLibraryEdition.app */;
@@ -135,10 +135,10 @@
 			packageReferences = (
 				18F9343C2E06DE9600FC5268 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				184073992E13E71C007EA578 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				180FF3F32E152E4600C66677 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				180FF5242E16D40B00C66677 /* XCRemoteSwiftPackageReference "swifty-ads" */,
 				180FF6832E1A6ADF00C66677 /* XCRemoteSwiftPackageReference "Reachability.swift" */,
+				180FF90C2E1D36A800C66677 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 18F933032E03E58900FC5268 /* Products */;
@@ -323,14 +323,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"PhotoLibraryEdition/Preview Content\"";
 				DEVELOPMENT_TEAM = 94PFXF76F8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PhotoLibraryEdition/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FrameFox Tools";
+				INFOPLIST_KEY_CFBundleDisplayName = "Video Saver";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires access to your photo library to display your videos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -343,7 +343,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vdsave.pro.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -362,14 +362,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"PhotoLibraryEdition/Preview Content\"";
 				DEVELOPMENT_TEAM = 94PFXF76F8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PhotoLibraryEdition/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FrameFox Tools";
+				INFOPLIST_KEY_CFBundleDisplayName = "Video Saver";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app requires access to your photo library to display your videos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -382,7 +382,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vdsave.pro.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -443,20 +443,20 @@
 				kind = branch;
 			};
 		};
+		180FF90C2E1D36A800C66677 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
 		184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 11.15.0;
-			};
-		};
-		184073992E13E71C007EA578 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.6.0;
 			};
 		};
 		18F9343C2E06DE9600FC5268 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
@@ -485,6 +485,11 @@
 			package = 180FF6832E1A6ADF00C66677 /* XCRemoteSwiftPackageReference "Reachability.swift" */;
 			productName = Reachability;
 		};
+		180FF90D2E1D36A800C66677 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 180FF90C2E1D36A800C66677 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
 		184073932E13DFDD007EA578 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -494,11 +499,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 184073922E13DFDD007EA578 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfig;
-		};
-		1840739A2E13E71C007EA578 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 184073992E13E71C007EA578 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
 		};
 		18F9343D2E06DE9600FC5268 /* IQKeyboardManagerSwift */ = {
 			isa = XCSwiftPackageProductDependency;
