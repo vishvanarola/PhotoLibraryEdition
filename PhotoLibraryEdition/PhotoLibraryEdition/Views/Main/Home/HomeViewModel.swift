@@ -9,6 +9,18 @@ import Foundation
 import Photos
 import SwiftUI
 
+struct VideosArrayData: Hashable {
+    var title: String
+    var videoUrl: String
+    var videoThumb: String
+    var size: String
+}
+
+struct RandomVideoItem: Identifiable, Hashable {
+    let id = UUID()
+    let data: VideosArrayData
+}
+
 class HomeViewModel: ObservableObject {
     @Published var videos: [PHAsset] = []
     @Published var authorizationStatus: PHAuthorizationStatus = .notDetermined

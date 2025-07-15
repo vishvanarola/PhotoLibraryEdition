@@ -22,8 +22,15 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var navigationPath = NavigationPath()
     @State private var showNoInternetAlert: Bool = false
+    @State private var enterTextInput: String = "https://example.com/"
+    @State private var isFindTapped: Bool = false
+    @State private var showToast = false
+    @State private var toastText: String = "Copied"
+    @State private var isUserAtTop: Bool = true
+    @State private var randomVideos = [RandomVideoItem]()
     @Binding var isTabBarHidden: Bool
     @Binding var isHiddenBanner: Bool
+    @Namespace private var topID
     let tools: [(name: String, destination: HomeDestination)] = [
         ("Text\nRepeater", .textRepeater),
         ("Text\nto Emoji", .textEmoji),
@@ -34,10 +41,36 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack {
-                headerView
-                videoListView
-                moreToolsView
+            ZStack {
+                VStack {
+                    headerView
+                    textFieldFindView
+                    if !randomVideos.isEmpty {
+                        videoListView
+                        Spacer()
+                    } else {
+                        Spacer()
+                        noDataView
+                        Spacer()
+                    }
+                    moreToolsView
+                }
+                if showToast {
+                    VStack {
+                        Spacer()
+                        Text(toastText)
+                            .font(FontConstants.MontserratFonts.medium(size: 17))
+                            .padding()
+                            .background(Color.black.opacity(0.8))
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .padding(.bottom, 20)
+                    }
+                }
+            }
+            .onAppear {
+                randomVideos = randomVideosGlob
             }
             .ignoresSafeArea()
             .navigationDestination(for: HomeDestination.self) { destination in
@@ -116,60 +149,128 @@ struct HomeView: View {
         .frame(height: UIScreen.main.bounds.height * 0.15)
     }
     
-    var videoListView: some View {
-        Group {
-            switch viewModel.authorizationStatus {
-            case .authorized, .limited:
-                if viewModel.videos.isEmpty {
-                    VStack {
-                        Spacer()
-                        Text("No videos found in your library.")
-                            .font(FontConstants.MontserratFonts.regular(size: 15))
-                            .foregroundColor(.primary)
-                            .padding()
-                        Spacer()
+    var textFieldFindView: some View {
+        VStack(spacing: 18) {
+            ZStack(alignment: .topTrailing) {
+                textFieldView
+                if !PremiumManager.shared.isPremium {
+                    Image("ic_text_pro")
+                        .padding(.top, 10)
+                        .padding(.trailing, 120)
+                }
+            }
+            findButtonView
+        }
+    }
+    
+    var textFieldView: some View {
+        HStack(spacing: 20) {
+            TextField("", text: $enterTextInput, prompt: Text("Enter or Paste URL")
+                .font(FontConstants.MontserratFonts.medium(size: 18))
+                .foregroundColor(.gray)
+            )
+            .font(FontConstants.MontserratFonts.semiBold(size: 18))
+            .keyboardType(.URL)
+            .padding(13)
+            .background(.white)
+            .cornerRadius(30)
+            .shadow(radius: 3)
+            Button {
+                if !enterTextInput.isEmpty {
+                    toastText = "Copied"
+                    UIPasteboard.general.string = enterTextInput
+                    showToasts()
+                }
+            } label: {
+                Image("ic_circle_copy")
+            }
+        }
+        .frame(height: 50)
+        .padding(.top, 20)
+        .padding(.horizontal, 20)
+    }
+    
+    var findButtonView: some View {
+        Button {
+            if self.isValidURLRegex(enterTextInput) {
+                if PremiumManager.shared.isPremium {
+                    if let random = videosArray.randomElement() {
+                        isFindTapped = true
+                        let newItem = RandomVideoItem(data: random)
+                        randomVideosGlob.insert(newItem, at: 0)
+                        randomVideos.insert(newItem, at: 0)
+                        if randomVideos.count > 50 {
+                            randomVideos.removeLast()
+                        }
                     }
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(viewModel.videos, id: \.self) { asset in
-                                VideoThumbnailView(asset: asset)
-                                    .padding(.horizontal)
+                    isHideTabBackPremium = false
+                    isTabBarHidden = true
+                    navigationPath.append(HomeDestination.premium)
+                }
+            } else {
+                toastText = "Plase enter a valid URL"
+                showToasts()
+            }
+            
+        } label: {
+            Text("Find")
+                .font(FontConstants.MontserratFonts.semiBold(size: 22))
+                .foregroundStyle(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(LinearGradient(
+                            colors: [redThemeColor, pinkThemeColor],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                )
+                .cornerRadius(30)
+        }
+        .padding(.horizontal, 20)
+    }
+    
+    var videoListView: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    Color.clear
+                        .frame(height: 1)
+                        .background(
+                            GeometryReader { geo -> Color in
+                                DispatchQueue.main.async {
+                                    isUserAtTop = geo.frame(in: .named("scroll")).minY >= -10
+                                }
+                                return Color.clear
                             }
-                        }
-                        .padding(.top)
-                        .padding(.bottom, 5)
+                        )
+                        .id("top")
+                    
+                    ForEach(randomVideos) { item in
+                        VideoThumbnailView(videoData: item.data)
+                            .padding(.horizontal)
                     }
                 }
-            case .denied, .restricted:
-                VStack {
-                    Spacer()
-                    Text("Photo library access denied. Please enable it in Settings.")
-                        .font(FontConstants.MontserratFonts.regular(size: 15))
-                        .foregroundColor(.red)
-                        .padding()
-                    Spacer()
-                }
-            case .notDetermined:
-                VStack {
-                    Spacer()
-                    Text("Requesting access...")
-                        .font(FontConstants.MontserratFonts.regular(size: 15))
-                        .foregroundColor(.black)
-                        .padding()
-                    Spacer()
-                }
-            @unknown default:
-                VStack {
-                    Spacer()
-                    Text("Unknown authorization status.")
-                        .font(FontConstants.MontserratFonts.regular(size: 15))
-                        .foregroundColor(.primary)
-                        .padding()
-                    Spacer()
+                .padding(.top)
+                .padding(.bottom, 5)
+            }
+            .coordinateSpace(name: "scroll")
+            .onChange(of: randomVideos) { _, _ in
+                if !isUserAtTop {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            proxy.scrollTo("top", anchor: .top)
+                        }
+                    }
                 }
             }
         }
+    }
+    
+    var noDataView: some View {
+        Image("ic_novideo")
     }
     
     var moreToolsView: some View {
@@ -228,93 +329,84 @@ struct HomeView: View {
                 )
         )
     }
+    
+    func showToasts() {
+        withAnimation {
+            showToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                showToast = false
+            }
+        }
+    }
+    
+    func isValidURLRegex(_ urlString: String) -> Bool {
+        let pattern = #"^(http|https)://([\w-]+(\.[\w-]+)+)([/#?]?.*)$"#
+        return urlString.range(of: pattern, options: .regularExpression) != nil
+    }
 }
 
 struct VideoThumbnailView: View {
-    let asset: PHAsset
-    @State private var thumbnail: UIImage? = nil
-    @State private var videoName: String = ""
-    @State private var videoSize: String = ""
+    @State var videoData: VideosArrayData?
     @State private var isPresentingPlayer = false
     @State private var showNoInternetAlert: Bool = false
     
     var body: some View {
-        Group {
-            if let thumbnail = thumbnail {
-                HStack(spacing: 14) {
-                    Image(uiImage: thumbnail)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 60, height: 60)
-                        .cornerRadius(10)
-                    
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(videoName.isEmpty ? "Video Name" : videoName)
-                            .font(FontConstants.MontserratFonts.semiBold(size: 15))
-                            .lineLimit(2)
-                            .foregroundStyle(Color.primary)
-                        Text(videoSize.isEmpty ? "--" : videoSize)
-                            .font(FontConstants.MontserratFonts.medium(size: 14))
-                            .foregroundStyle(textGrayColor)
-                            .lineLimit(1)
-                    }
-                    Spacer()
-                }
-                .padding(10)
-                .background(Color.white)
-                .cornerRadius(15)
-                .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 0)
-                .onTapGesture {
-                    if ReachabilityManager.shared.isNetworkAvailable {
-                        isPresentingPlayer = true
-                    } else {
-                        showNoInternetAlert = true
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(.black.opacity(0.1))
+                AsyncImage(url: URL(string: videoData?.videoThumb ?? "")) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .clipped()
+                    case .failure:
+                        Image(systemName: "photo")
+                            .resizable()
+                            .scaledToFit()
+                    @unknown default:
+                        EmptyView()
                     }
                 }
-                .sheet(isPresented: $isPresentingPlayer) {
-                    VideoPlayerView(asset: asset)
-                }
+                .frame(width: 60, height: 60)
+                .cornerRadius(10)
+            }
+            .frame(width: 60, height: 60)
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text(videoData?.title ?? "Video Name")
+                    .font(FontConstants.MontserratFonts.semiBold(size: 15))
+                    .lineLimit(2)
+                    .foregroundStyle(Color.primary)
+                Text(videoData?.size ?? "--")
+                    .font(FontConstants.MontserratFonts.medium(size: 14))
+                    .foregroundStyle(textGrayColor)
+                    .lineLimit(1)
+            }
+            Spacer()
+        }
+        .padding(10)
+        .background(Color.white)
+        .cornerRadius(15)
+        .shadow(color: Color.black.opacity(0.25), radius: 2, x: 0, y: 0)
+        .onTapGesture {
+            if ReachabilityManager.shared.isNetworkAvailable {
+                isPresentingPlayer = true
             } else {
-                ZStack {
-                    Color.gray.opacity(0.2)
-                    ProgressView()
-                }
+                showNoInternetAlert = true
             }
         }
-        .onAppear {
-            loadThumbnail()
-            loadVideoInfo()
+        .sheet(isPresented: $isPresentingPlayer) {
+            if let urlString = videoData?.videoUrl, let url = URL(string: urlString) {
+                VideoPlayerView(videoURL: url)
+            } else {
+                Text("Invalid video URL")
+            }
         }
         .noInternetAlert(isPresented: $showNoInternetAlert)
-    }
-    
-    private func loadThumbnail() {
-        let manager = PHImageManager.default()
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .highQualityFormat
-        options.isSynchronous = false
-        options.resizeMode = .exact
-        let targetSize = CGSize(width: 400, height: 400)
-        manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, _ in
-            if let image = image {
-                self.thumbnail = image
-            }
-        }
-    }
-    
-    private func loadVideoInfo() {
-        let resources = PHAssetResource.assetResources(for: asset)
-        if let resource = resources.first {
-            self.videoName = resource.originalFilename
-            if let fileSize = resource.value(forKey: "fileSize") as? Int {
-                self.videoSize = formatBytes(fileSize)
-            }
-        }
-    }
-    
-    private func formatBytes(_ bytes: Int) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: Int64(bytes))
     }
 }

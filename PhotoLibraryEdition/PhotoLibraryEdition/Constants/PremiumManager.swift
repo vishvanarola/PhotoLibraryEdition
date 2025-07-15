@@ -126,3 +126,32 @@ class PremiumManager: ObservableObject {
         isPremium = value
     }
 }
+
+enum PremiumAlertType: Identifiable {
+    case error(String)
+    case success(String)
+    case restore(String)
+    
+    var id: String {
+        switch self {
+        case .error: return "error"
+        case .success: return "success"
+        case .restore: return "restore"
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .error: return "Error"
+        case .success: return "Purchase Successfully"
+        case .restore: return "Restore Successfully"
+        }
+    }
+    
+    var message: String {
+        switch self {
+        case .error(let msg), .success(let msg), .restore(let msg):
+            return msg
+        }
+    }
+}

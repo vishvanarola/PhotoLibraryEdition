@@ -12,11 +12,8 @@ struct PremiumView: View {
     @ObservedObject private var premiumManager = PremiumManager.shared
     @Environment(\.openURL) var openURL
     @State private var selectedPlanIndex = 0
-    @State private var showPurchaseError = false
-    @State private var purchaseErrorMessage = ""
     @State private var isPurchasing = false
-    @State private var showPurchaseSuccess = false
-    @State private var showRestoreSuccess = false
+    @State private var activeAlert: PremiumAlertType?
     @Binding var isTabBarHidden: Bool
     @Binding var navigationPath: NavigationPath
     @Binding var isHiddenBanner: Bool
@@ -34,14 +31,12 @@ struct PremiumView: View {
                             headerView
                             featuresView
                             subscriptionPlansView
-                            Color.clear
-                                .frame(height: 1)
-                                .id("BOTTOM")
+                            Color.clear.frame(height: 1).id("BOTTOM")
                         }
                         .padding(.top, 10)
                     }
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now()+0.7) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                             withAnimation(.easeOut(duration: 2)) {
                                 proxy.scrollTo("BOTTOM", anchor: .bottom)
                             }
@@ -59,32 +54,26 @@ struct PremiumView: View {
         }
         .onAppear {
             isHiddenBanner = true
-            if premiumManager.products.count <= 0 {
+            if premiumManager.products.isEmpty {
                 premiumManager.fetchProducts()
             }
         }
         .onDisappear {
             isHiddenBanner = false
         }
-        .alert(isPresented: $showPurchaseError) {
+        .alert(item: $activeAlert) { alert in
             Alert(
-                title: Text("Error"),
-                message: Text(purchaseErrorMessage),
-                dismissButton: .default(Text("OK"))
-            )
-        }
-        .alert(isPresented: $showPurchaseSuccess) {
-            Alert(
-                title: Text("Purchase Successfully"),
-                message: Text("Enjoy app without ads!"),
-                dismissButton: .default(Text("OK"))
-            )
-        }
-        .alert(isPresented: $showRestoreSuccess) {
-            Alert(
-                title: Text("Restore Successfully"),
-                message: Text("Enjoy app without ads!"),
-                dismissButton: .default(Text("OK"))
+                title: Text(alert.title),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK")) {
+                    if case .success = alert {
+                        isTabBarHidden = isHideTabBackPremium
+                        navigationPath.removeLast()
+                    } else if case .restore = alert {
+                        isTabBarHidden = isHideTabBackPremium
+                        navigationPath.removeLast()
+                    }
+                }
             )
         }
     }
@@ -103,20 +92,23 @@ struct PremiumView: View {
     
     var restoreView: some View {
         HStack {
-            Button {
-                premiumManager.restorePurchases { success, error in
-                    if success {
-                        premiumManager.checkPremiumStatus()
-                        showRestoreSuccess = true
-                    } else {
-                        purchaseErrorMessage = error ?? "Restore failed."
-                        showPurchaseError = true
+            if restoreShow {
+                Button {
+                    premiumManager.restorePurchases { success, error in
+                        DispatchQueue.main.async {
+                            if success {
+                                premiumManager.checkPremiumStatus()
+                                activeAlert = .restore("Enjoy app without ads!")
+                            } else {
+                                activeAlert = .error(error ?? "Restore failed.")
+                            }
+                        }
                     }
+                } label: {
+                    Text("Restore")
+                        .font(FontConstants.SyneFonts.medium(size: 20))
+                        .foregroundStyle(Color.black.opacity(0.5))
                 }
-            } label: {
-                Text("Restore")
-                    .font(FontConstants.SyneFonts.medium(size: 20))
-                    .foregroundStyle(Color.black.opacity(0.5))
             }
             Spacer()
             Button {
@@ -194,13 +186,14 @@ struct PremiumView: View {
             
             isPurchasing = true
             premiumManager.purchase(product: product) { success, error in
-                isPurchasing = false
-                if success {
-                    premiumManager.checkPremiumStatus()
-                    showPurchaseSuccess = true
-                } else {
-                    purchaseErrorMessage = error ?? "Purchase failed."
-                    showPurchaseError = true
+                DispatchQueue.main.async {
+                    isPurchasing = false
+                    if success {
+                        premiumManager.checkPremiumStatus()
+                        activeAlert = .success("Enjoy app without ads!")
+                    } else {
+                        activeAlert = .error(error ?? "Purchase failed.")
+                    }
                 }
             }
         } label: {

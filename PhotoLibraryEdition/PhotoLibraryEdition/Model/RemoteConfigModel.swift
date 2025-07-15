@@ -15,6 +15,7 @@ struct RemoteAdsModel : Codable {
     var rewardedInterstitial : String? = nil
     var intergap : Int? = nil
     var canShowUMP : Bool? = nil
+    var restoreShow : Bool? = nil
     
     init() {
         
