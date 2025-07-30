@@ -242,3 +242,7 @@ struct MuteAudioView: View {
         }
     }
 }
+
+#Preview {
+    MuteAudioView(isTabBarHidden: .constant(true), navigationPath: .constant(NavigationPath()))
+}

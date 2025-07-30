@@ -223,3 +223,12 @@ extension AdManager: BannerViewDelegate {
         isBannerAdLoaded = false
     }
 }
+
+extension UIApplication {
+    var rootVC: UIViewController? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.windows
+            .first(where: { $0.isKeyWindow })?.rootViewController
+    }
+}

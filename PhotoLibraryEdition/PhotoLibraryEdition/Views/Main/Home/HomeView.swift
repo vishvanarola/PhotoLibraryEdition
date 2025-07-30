@@ -19,10 +19,10 @@ enum HomeDestination: Hashable {
 }
 
 struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
+//    @StateObject private var viewModel = HomeViewModel()
     @State private var navigationPath = NavigationPath()
     @State private var showNoInternetAlert: Bool = false
-    @State private var enterTextInput: String = "https://example.com/"
+    @State private var enterTextInput: String = "https://example.com"
     @State private var isFindTapped: Bool = false
     @State private var showToast = false
     @State private var toastText: String = "Copied"
@@ -120,7 +120,7 @@ struct HomeView: View {
                     Spacer()
                     Spacer()
                     Spacer()
-                    Text(appName)
+                    Text(homeAppName)
                         .font(FontConstants.SyneFonts.semiBold(size: 23))
                         .foregroundStyle(Color.white)
                     Spacer()
@@ -410,3 +410,8 @@ struct VideoThumbnailView: View {
         .noInternetAlert(isPresented: $showNoInternetAlert)
     }
 }
+
+#Preview {
+    HomeView(isTabBarHidden: .constant(false), isHiddenBanner: .constant(false))
+}
+

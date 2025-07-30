@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-let appName = "Video Saver"
+let homeAppName = "Video Saver"
+let splashAppName = "Video Saver"
 let remoteConfigAdFetchKey = "VideoTools"
 var interstitialIntergap: Int = 3
 var isHideTabBackPremium: Bool = true

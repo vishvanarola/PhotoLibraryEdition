@@ -20,9 +20,10 @@ struct SplashView: View {
                     .frame(width: 130, height: 130)
                     .foregroundColor(.primary)
                 
-                Text(appName)
+                Text(splashAppName)
                     .font(FontConstants.SyneFonts.semiBold(size: 30))
                     .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
                 
                 Text("\"Slow it down, create your space, and keep your moments private.\"")
                     .font(FontConstants.MontserratFonts.regular(size: 20))

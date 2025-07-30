@@ -175,3 +175,8 @@ struct TextRepeaterView: View {
         PremiumManager.shared.markUsed()
     }
 }
+
+#Preview {
+    TextRepeaterView(isTabBarHidden: .constant(true), navigationPath: .constant(NavigationPath()))
+}
+
